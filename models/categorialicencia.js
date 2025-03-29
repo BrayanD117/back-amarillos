@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }, {
     sequelize,
-    modelName: 'CategoriaLicencia',
+    modelName: 'CategoriaLicencias',
   });
   return CategoriaLicencia;
 };
