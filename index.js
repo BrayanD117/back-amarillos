@@ -19,7 +19,7 @@ app.get('/', (req, res) => {
 db.sequelize.authenticate()
   .then(() => {
     console.log('Conexión a la base de datos exitosa.');
-    return db.sequelize.sync();
+    // return db.sequelize.sync();
   })
   .then(() => {
     app.listen(port, () => {

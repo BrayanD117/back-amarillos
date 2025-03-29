@@ -26,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'idCombustible'
       });
 
-      Vehiculo.belongsTo(models.Tarjeta, {
+      Vehiculo.belongsTo(models.Tarjetas, {
         foreignKey: 'idTarjeta'
       });
     }
