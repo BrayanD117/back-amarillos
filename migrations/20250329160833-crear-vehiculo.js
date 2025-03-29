@@ -75,7 +75,7 @@ module.exports = {
       fechaExpedicion: {
         type: Sequelize.DATE
       },
-      orgnismo: {
+      organismo: {
         type: Sequelize.STRING
       },
       qr: {

@@ -96,7 +96,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DATE,
       allowNull: false
     },
-    orgnismo: {
+    organismo: {
       type: DataTypes.STRING,
       allowNull: false
     },

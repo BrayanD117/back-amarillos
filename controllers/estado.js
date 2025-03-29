@@ -1,6 +1,6 @@
 const { Estado } = require('../models');
 
-const createStatus = async (req, res) => {
+exports.createStatus = async (req, res) => {
   try {
     const estado = await Estado.create(req.body);
     res.status(201).json(estado);
@@ -9,7 +9,7 @@ const createStatus = async (req, res) => {
   }
 };
 
-const getAllStatus = async (req, res) => {
+exports.getAllStatus = async (req, res) => {
   try {
     const estados = await Estado.findAll();
     res.status(200).json(estados);
@@ -18,7 +18,7 @@ const getAllStatus = async (req, res) => {
   }
 };
 
-const getStatusById = async (req, res) => {
+exports.getStatusById = async (req, res) => {
   try {
     const estado = await Estado.findByPk(req.params.id);
     if (estado) {
@@ -31,7 +31,7 @@ const getStatusById = async (req, res) => {
   }
 };
 
-const updateStatus = async (req, res) => {
+exports.updateStatus = async (req, res) => {
   try {
     const estado = await Estado.findByPk(req.params.id);
     if (estado) {
@@ -45,7 +45,7 @@ const updateStatus = async (req, res) => {
   }
 };
 
-const deleteStatus = async (req, res) => {
+exports.deleteStatus = async (req, res) => {
   try {
     const estado = await Estado.findByPk(req.params.id);
     if (estado) {
@@ -57,12 +57,4 @@ const deleteStatus = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-};
-
-module.exports = {
-  createStatus,
-  getAllStatus,
-  getStatusById,
-  updateStatus,
-  deleteStatus
 };
