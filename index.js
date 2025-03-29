@@ -8,6 +8,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const db = require('./models');
+const routes = require('./routes');
+
+app.use('/api', routes);
 
 app.get('/', (req, res) => {
   res.send('¡Servidor Express + Sequelize corriendo!');
