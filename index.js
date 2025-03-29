@@ -1,4 +1,4 @@
-require('dotenv').config(); // Por si quieres usar process.env directamente aquí también
+require('dotenv').config();
 
 const express = require('express');
 const app = express();
@@ -7,19 +7,16 @@ const port = process.env.PORT || 4000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Sequelize
-const db = require('./models'); // models/index.js exporta la instancia y sincroniza
+const db = require('./models');
 
-// Rutas de ejemplo
 app.get('/', (req, res) => {
   res.send('¡Servidor Express + Sequelize corriendo!');
 });
 
-// Iniciar servidor
 db.sequelize.authenticate()
   .then(() => {
     console.log('Conexión a la base de datos exitosa.');
-    return db.sequelize.sync(); // opcional: { force: true } o { alter: true }
+    return db.sequelize.sync();
   })
   .then(() => {
     app.listen(port, () => {
