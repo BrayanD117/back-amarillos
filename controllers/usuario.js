@@ -1,4 +1,4 @@
-const { Usuario, Persona } = require('../models');
+const { Usuario, Persona, TipoDocumento, GrupoSanguineo, CategoriaLicencias } = require('../models');
 const bcrypt = require('bcrypt');
 
 exports.crearUsuario = async (req, res) => {
@@ -88,6 +88,217 @@ exports.crearUsuario = async (req, res) => {
     res.status(500).json({
       ok: false,
       msg: 'Error al crear usuario. Por favor contacte al administrador'
+    });
+  }
+};
+
+exports.obtenerUsuarios = async (req, res) => {
+  try {
+    const usuarios = await Usuario.findAll({
+      include: [{
+        model: Persona,
+        include: [
+          { 
+            model: TipoDocumento,
+            attributes: ['nombre']
+          },
+          { 
+            model: GrupoSanguineo,
+            attributes: ['nombre'] 
+          },
+          { 
+            model: CategoriaLicencias,
+            attributes: ['nombre']
+          }
+        ]
+      }]
+    });
+
+    res.json({
+      ok: true,
+      usuarios
+    });
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      ok: false,
+      msg: 'Error al obtener usuarios. Por favor contacte al administrador'
+    });
+  }
+};
+
+exports.obtenerUsuarioPorId = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const usuario = await Usuario.findByPk(id, {
+      include: [{
+        model: Persona,
+        include: [
+          { 
+            model: TipoDocumento,
+            attributes: ['nombre']
+          },
+          { 
+            model: GrupoSanguineo,
+            attributes: ['nombre']
+          },
+          { 
+            model: CategoriaLicencias,
+            attributes: ['nombre']
+          }
+        ]
+      }]
+    });
+
+    if (!usuario) {
+      return res.status(404).json({
+        ok: false,
+        msg: 'Usuario no encontrado'
+      });
+    }
+
+    res.json({
+      ok: true,
+      usuario
+    });
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      ok: false,
+      msg: 'Error al obtener usuario. Por favor contacte al administrador'
+    });
+  }
+};
+
+exports.actualizarUsuario = async (req, res) => {
+  const { id } = req.params;
+  const {
+    primerApellido,
+    segundoApellido,
+    primerNombre,
+    segundoNombre,
+    idTipoDocumento,
+    numeroDocumento,
+    direccion,
+    telefono,
+    idGrupoSanguineo,
+    rh,
+    eps,
+    arl,
+    pension,
+    licencia,
+    idCategoriaLicencia,
+    organismo,
+    vigencia,
+    foto,
+    usuario: nombreUsuario,
+    idRol,
+    idEstado,
+  } = req.body;
+
+  try {
+    const usuarioExistente = await Usuario.findByPk(id);
+
+    if (!usuarioExistente) {
+      return res.status(404).json({
+        ok: false,
+        msg: 'Usuario no encontrado'
+      });
+    }
+
+    const datosUsuario = {
+      ...(nombreUsuario && { usuario: nombreUsuario.toUpperCase() }),
+      ...(idRol && { idRol }),
+      ...(idEstado && { idEstado })
+    };
+
+    await usuarioExistente.update(datosUsuario);
+
+    const personaExistente = await Persona.findOne({ where: { idUsuario: id } });
+
+    if (!personaExistente) {
+      return res.status(404).json({
+        ok: false,
+        msg: 'Datos de persona no encontrados'
+      });
+    }
+
+    const datosPersona = {
+      ...(primerApellido && { primerApellido: primerApellido.toUpperCase() }),
+      ...(segundoApellido && { segundoApellido: segundoApellido?.toUpperCase() }),
+      ...(primerNombre && { primerNombre: primerNombre.toUpperCase() }),
+      ...(segundoNombre && { segundoNombre: segundoNombre?.toUpperCase() }),
+      ...(idTipoDocumento && { idTipoDocumento }),
+      ...(numeroDocumento && { numeroDocumento: numeroDocumento.toUpperCase() }),
+      ...(direccion && { direccion: direccion.toUpperCase() }),
+      ...(telefono && { telefono: telefono.toUpperCase() }),
+      ...(idGrupoSanguineo && { idGrupoSanguineo }),
+      ...(rh && { rh: rh.toUpperCase() }),
+      ...(eps && { eps: eps.toUpperCase() }),
+      ...(arl && { arl: arl.toUpperCase() }),
+      ...(pension && { pension: pension.toUpperCase() }),
+      ...(licencia && { licencia: licencia.toUpperCase() }),
+      ...(idCategoriaLicencia && { idCategoriaLicencia }),
+      ...(organismo && { organismo: organismo.toUpperCase() }),
+      ...(vigencia && { vigencia }),
+      ...(foto && { foto })
+    };
+
+    await personaExistente.update(datosPersona);
+
+    const usuarioActualizado = await Usuario.findByPk(id, {
+      include: [{
+        model: Persona,
+        include: [
+          { model: TipoDocumento },
+          { model: GrupoSanguineo },
+          { model: CategoriaLicencias }
+        ]
+      }]
+    });
+
+    res.json({
+      ok: true,
+      usuario: usuarioActualizado
+    });
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      ok: false,
+      msg: 'Error al actualizar usuario. Por favor contacte al administrador'
+    });
+  }
+};
+
+exports.eliminarUsuario = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const usuario = await Usuario.findByPk(id);
+
+    if (!usuario) {
+      return res.status(404).json({
+        ok: false,
+        msg: 'Usuario no encontrado'
+      });
+    }
+
+    await usuario.destroy();
+
+    res.json({
+      ok: true,
+      msg: 'Usuario eliminado correctamente'
+    });
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      ok: false,
+      msg: 'Error al eliminar usuario. Por favor contacte al administrador'
     });
   }
 };
