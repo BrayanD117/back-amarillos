@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const estadoController = require('../controllers/estado');
+const statusController = require('../controllers/estado');
 
-router.post('/', estadoController.createStatus);
-router.get('/', estadoController.getAllStatus);
-router.get('/:id', estadoController.getStatusById);
-router.put('/:id', estadoController.updateStatus);
-router.delete('/:id', estadoController.deleteStatus);
+router.post('/', statusController.createStatus);
+router.get('/', statusController.getAllStatus);
+router.get('/:id', statusController.getStatusById);
+router.put('/:id', statusController.updateStatus);
+router.delete('/:id', statusController.deleteStatus);
 
 module.exports = router;
