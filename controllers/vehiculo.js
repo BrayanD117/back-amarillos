@@ -1,4 +1,4 @@
-const { Vehiculo } = require('../models');
+const { Vehiculo, Usuario, Estado, Servicio, Combustible, Tarjetas } = require('../models');
 const { Op } = require('sequelize');
 
 exports.createVehicle = async (req, res) => {
@@ -133,6 +133,96 @@ exports.deleteVehicle = async (req, res) => {
         res.status(500).json({
             success: false,
             message: "Error al eliminar el vehículo",
+            error: error.message
+        });
+    }
+};
+
+exports.getVehicleOptions = async (req, res) => {
+    try {
+        const [usuarios, estados, servicios, combustibles, tarjetas] = await Promise.all([
+            Usuario.findAll({
+                attributes: ['id'],
+            }),
+            Estado.findAll({
+                attributes: ['id', 'nombre']
+            }),
+            Servicio.findAll({
+                attributes: ['id', 'nombre'] 
+            }),
+            Combustible.findAll({
+                attributes: ['id', 'nombre']
+            }),
+            Tarjetas.findAll({
+                attributes: ['id', 'numero']
+            })
+        ]);
+
+        res.status(200).json({
+            success: true,
+            data: {
+                usuarios,
+                estados,
+                servicios,
+                combustibles,
+                tarjetas
+            },
+            message: "Relaciones obtenidas exitosamente"
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Error al obtener las relaciones",
+            error: error.message
+        });
+    }
+};
+
+exports.getVehicleWithRelations = async (req, res) => {
+    try {
+        const vehicle = await Vehiculo.findByPk(req.params.id, {
+            include: [
+                {
+                    model: Usuario,
+                    attributes: ['id', 'nombre', 'apellido']
+                },
+                {
+                    model: Estado,
+                    attributes: ['id', 'nombre']
+                },
+                {
+                    model: Servicio,
+                    attributes: ['id', 'nombre']
+                },
+                {
+                    model: Combustible,
+                    attributes: ['id', 'nombre']
+                },
+                {
+                    model: Tarjetas,
+                    attributes: ['id', 'numero']
+                }
+            ]
+        });
+
+        if (!vehicle) {
+            return res.status(404).json({
+                success: false,
+                message: "Vehículo no encontrado"
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: vehicle,
+            message: "Vehículo y sus relaciones obtenidos exitosamente"
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Error al obtener el vehículo y sus relaciones",
             error: error.message
         });
     }
