@@ -18,10 +18,28 @@ exports.createVehicle = async (req, res) => {
 
 exports.getAllVehicles = async (req, res) => {
     try {
-        const vehicles = await Vehiculo.findAll();
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const offset = (page - 1) * limit;
+
+        const { count, rows: vehicles } = await Vehiculo.findAndCountAll({
+            limit,
+            offset
+        });
+
+        const totalPages = Math.ceil(count / limit);
+
         res.status(200).json({
             success: true,
-            data: vehicles
+            data: {
+                vehicles,
+                pagination: {
+                    total: count,
+                    page,
+                    totalPages,
+                    limit
+                }
+            }
         });
     } catch (error) {
         res.status(500).json({
