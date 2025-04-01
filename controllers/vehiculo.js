@@ -15,7 +15,7 @@ exports.createVehicle = async (req, res) => {
         if (!usuario) {
             return res.status(404).json({
                 success: false,
-                message: "NO SE ENCONTRÓ EL USUARIO ASOCIADO CON ESE NÚMERO DE DOCUMENTO"
+                message: "No se encontró el usuario asociado con ese número de documento"
             });
         }
 
