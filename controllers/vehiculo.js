@@ -7,7 +7,7 @@ exports.createVehicle = async (req, res) => {
             include: [{
                 model: Persona,
                 where: {
-                    numeroDocumento: req.body.numeroDocumento
+                    numeroDocumento: req.body.cedula
                 }
             }]
         });
