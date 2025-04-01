@@ -1,4 +1,5 @@
 const { Vehiculo } = require('../models');
+const { Op } = require('sequelize');
 
 exports.createVehicle = async (req, res) => {
     try {
@@ -21,8 +22,18 @@ exports.getAllVehicles = async (req, res) => {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
         const offset = (page - 1) * limit;
+        const search = req.query.search || '';
+
+        const whereClause = search ? {
+            [Op.or]: [
+                { placa: { [Op.like]: `%${search}%` } },
+                { marca: { [Op.like]: `%${search}%` } },
+                ...((!isNaN(search) ? [{ modelo: parseInt(search) }] : []))
+            ]
+        } : {};
 
         const { count, rows: vehicles } = await Vehiculo.findAndCountAll({
+            where: whereClause,
             limit,
             offset
         });
