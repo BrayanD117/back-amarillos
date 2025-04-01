@@ -15,7 +15,7 @@ exports.createVehicle = async (req, res) => {
         if (!usuario) {
             return res.status(404).json({
                 success: false,
-                message: "No se encontró el usuario asociado con ese número de documento"
+                message: "NO SE ENCONTRÓ EL USUARIO ASOCIADO CON ESE NÚMERO DE DOCUMENTO"
             });
         }
 
@@ -23,6 +23,12 @@ exports.createVehicle = async (req, res) => {
             ...req.body,
             idUsuario: usuario.id,
         };
+
+        for (const key in vehicleData) {
+            if (typeof vehicleData[key] === 'string') {
+                vehicleData[key] = vehicleData[key].toUpperCase().trimEnd();
+            }
+        }
 
         const vehicle = await Vehiculo.create(vehicleData);
         
