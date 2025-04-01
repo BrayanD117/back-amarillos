@@ -68,6 +68,26 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false
     },
+    clase: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    carroceria: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    capacidad: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    motor: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    chasis: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
     importacion: {
       type: DataTypes.STRING,
       allowNull: false

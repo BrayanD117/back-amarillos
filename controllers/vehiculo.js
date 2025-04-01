@@ -21,7 +21,7 @@ exports.createVehicle = async (req, res) => {
 
         const vehicleData = {
             ...req.body,
-            idUsuario: usuario.id
+            idUsuario: usuario.id,
         };
 
         const vehicle = await Vehiculo.create(vehicleData);
