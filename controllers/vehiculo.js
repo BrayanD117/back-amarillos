@@ -1,13 +1,36 @@
-const { Vehiculo, Usuario, Estado, Servicio, Combustible, Tarjetas } = require('../models');
+const { Vehiculo, Persona, Usuario, Estado, Servicio, Combustible, Tarjetas } = require('../models');
 const { Op } = require('sequelize');
 
 exports.createVehicle = async (req, res) => {
     try {
-        const vehicle = await Vehiculo.create(req.body);
+        const usuario = await Usuario.findOne({
+            include: [{
+                model: Persona,
+                where: {
+                    numeroDocumento: req.body.numeroDocumento
+                }
+            }]
+        });
+
+        if (!usuario) {
+            return res.status(404).json({
+                success: false,
+                message: "No se encontró el usuario asociado con ese número de documento"
+            });
+        }
+
+        const vehicleData = {
+            ...req.body,
+            idUsuario: usuario.id
+        };
+
+        const vehicle = await Vehiculo.create(vehicleData);
+        
         res.status(201).json({
             success: true,
             data: vehicle
         });
+
     } catch (error) {
         res.status(500).json({
             success: false,
