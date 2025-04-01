@@ -19,6 +19,19 @@ exports.createVehicle = async (req, res) => {
             });
         }
 
+        const existingVehicle = await Vehiculo.findOne({
+            where: {
+                placa: req.body.placa.toUpperCase()
+            }
+        });
+
+        if (existingVehicle) {
+            return res.status(400).json({
+                success: false,
+                message: "La placa ya está registrada"
+            });
+        }
+
         const vehicleData = {
             ...req.body,
             idUsuario: usuario.id,
