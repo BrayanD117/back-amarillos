@@ -105,7 +105,15 @@ exports.getAllVehicles = async (req, res) => {
 
 exports.getVehicleById = async (req, res) => {
     try {
-        const vehicle = await Vehiculo.findByPk(req.params.id);
+        const vehicle = await Vehiculo.findByPk(req.params.id, {
+            include: [{
+                model: Usuario,
+                include: [{
+                    model: Persona,
+                    attributes: ['numeroDocumento']
+                }]
+            }]
+        });
 
         if (!vehicle) {
             return res.status(404).json({
@@ -116,7 +124,10 @@ exports.getVehicleById = async (req, res) => {
 
         res.status(200).json({
             success: true,
-            data: vehicle
+            data: {
+                ...vehicle.toJSON(),
+                cedula: vehicle.Usuario.Persona.numeroDocumento
+            }
         });
     } catch (error) {
         res.status(500).json({
@@ -138,7 +149,48 @@ exports.updateVehicle = async (req, res) => {
             });
         }
 
-        await vehicle.update(req.body);
+        const usuario = await Usuario.findOne({
+            include: [{
+                model: Persona,
+                where: {
+                    numeroDocumento: req.body.cedula
+                }
+            }]
+        });
+
+        if (!usuario) {
+            return res.status(404).json({
+                success: false,
+                message: "No se encontró el usuario asociado con ese número de documento"
+            });
+        }
+
+        const existingVehicle = await Vehiculo.findOne({
+            where: {
+                placa: req.body.placa.toUpperCase(),
+                id: { [Op.ne]: vehicle.id }
+            }
+        });
+
+        if (existingVehicle) {
+            return res.status(400).json({
+                success: false,
+                message: "La placa ya está registrada"
+            });
+        }
+
+        const vehicleData = {
+            ...req.body,
+            idUsuario: vehicle.idUsuario,
+        };
+
+        for (const key in vehicleData) {
+            if (typeof vehicleData[key] === 'string') {
+                vehicleData[key] = vehicleData[key].toUpperCase().trimEnd();
+            }
+        }
+
+        await vehicle.update(vehicleData);
 
         res.status(200).json({
             success: true,
