@@ -23,12 +23,18 @@ exports.login = async (req, res) => {
 
         const token = jwt.sign(tokenPayload, process.env.JWT_SECRET, { expiresIn: '1h' });
 
+        res.cookie('tokenAcceso', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'Strict',
+            maxAge: 60 * 60 * 1000
+        })
+
         return res.json({
             id: usuarioExistente.id,
             usuario: usuarioExistente.usuario,
             rol: roleName,
-            idEstado: usuarioExistente.idEstado,
-            tokenAcceso: token
+            idEstado: usuarioExistente.idEstado
         });
 
     } catch (error) {
