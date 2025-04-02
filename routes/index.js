@@ -10,6 +10,7 @@ const docTypesRoutes = require('./tipoDocumento');
 const bloodTypesRoutes = require('./grupoSanguineo');
 const licenseCategoriesRoutes = require('./categoriaLicencia');
 const usuarioRoutes = require('./usuario');
+const authRoutes = require('./autenticacion');
 
 router.use('/roles', rolesRoutes);
 router.use('/estados', statusRoutes);
@@ -19,5 +20,7 @@ router.use('/combustibles', fuelsRoutes);
 router.use('/tipos-documento', docTypesRoutes);
 router.use('/grupos-sanguineos', bloodTypesRoutes);
 router.use('/categorias-licencia', licenseCategoriesRoutes);
-router.use('/usuario', usuarioRoutes);
+router.use('/usuarios', usuarioRoutes);
+router.use('/autenticacion', authRoutes);
+
 module.exports = router;
