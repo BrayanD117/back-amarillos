@@ -23,7 +23,7 @@ exports.verifyToken = (req, res, next) => {
 };
 
 exports.isAdmin = (req, res, next) => {
-    if (req.rol === "Admin") {
+    if (req.rol === "Administrador") {
         return next();
     }
     res.status(403).json({ message: 'No tiene permisos para realizar esta acción' });

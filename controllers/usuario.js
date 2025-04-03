@@ -1,5 +1,6 @@
-const { Usuario, Persona, TipoDocumento, GrupoSanguineo, CategoriaLicencias } = require('../models');
+const { Usuario, Persona, TipoDocumento, GrupoSanguineo, CategoriaLicencias, Estado, Rol } = require('../models');
 const bcrypt = require('bcrypt');
+const { Op, fn, col, where } = require('sequelize');
 
 exports.crearUsuario = async (req, res) => {
   try {
@@ -7,7 +8,7 @@ exports.crearUsuario = async (req, res) => {
       primerApellido,
       segundoApellido,
       primerNombre,
-      segundoNombre, 
+      segundoNombre,
       idTipoDocumento,
       numeroDocumento,
       direccion,
@@ -37,7 +38,7 @@ exports.crearUsuario = async (req, res) => {
 
     try {
       nuevoUsuario = await Usuario.create({
-        usuario: usuario.toUpperCase(),
+        usuario,
         contrasenia: contraseniaHash,
         idRol,
         idEstado
@@ -94,19 +95,43 @@ exports.crearUsuario = async (req, res) => {
 
 exports.obtenerUsuarios = async (req, res) => {
   try {
-    const usuarios = await Usuario.findAll({
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = (page - 1) * limit;
+    const search = String(req.query.search || '').trim().toUpperCase();;
+
+    const wherePersona = search
+      ? {
+          [Op.or]: [
+            where(fn('UPPER', col('Persona.numeroDocumento')), {
+              [Op.like]: `%${search}%`
+            }),
+            where(fn('UPPER', col('Persona.primerNombre')), {
+              [Op.like]: `%${search}%`
+            }),
+            where(fn('UPPER', col('Persona.primerApellido')), {
+              [Op.like]: `%${search}%`
+            })
+          ]
+        }
+      : {};
+
+    const { count, rows: usuarios } = await Usuario.findAndCountAll({
+      offset,
+      limit,
       include: [{
         model: Persona,
+        where: wherePersona,
         include: [
-          { 
+          {
             model: TipoDocumento,
             attributes: ['nombre']
           },
-          { 
+          {
             model: GrupoSanguineo,
-            attributes: ['nombre'] 
+            attributes: ['nombre']
           },
-          { 
+          {
             model: CategoriaLicencias,
             attributes: ['nombre']
           }
@@ -116,14 +141,17 @@ exports.obtenerUsuarios = async (req, res) => {
 
     res.json({
       ok: true,
-      usuarios
+      usuarios,
+      total: count,
+      page,
+      totalPages: Math.ceil(count / limit)
     });
 
   } catch (error) {
     console.log(error);
     res.status(500).json({
       ok: false,
-      msg: 'Error al obtener usuarios. Por favor contacte al administrador'
+      msg: 'Error al obtener usuarios.'
     });
   }
 };
@@ -136,15 +164,15 @@ exports.obtenerUsuarioPorId = async (req, res) => {
       include: [{
         model: Persona,
         include: [
-          { 
+          {
             model: TipoDocumento,
             attributes: ['nombre']
           },
-          { 
+          {
             model: GrupoSanguineo,
             attributes: ['nombre']
           },
-          { 
+          {
             model: CategoriaLicencias,
             attributes: ['nombre']
           }
@@ -299,6 +327,46 @@ exports.eliminarUsuario = async (req, res) => {
     res.status(500).json({
       ok: false,
       msg: 'Error al eliminar usuario. Por favor contacte al administrador'
+    });
+  }
+};
+
+exports.getUserOptions = async (req, res) => {
+  try {
+    const [roles, estados, tiposDocumento, gruposSanguineos, categoriasLicencia] = await Promise.all([
+      Rol.findAll({
+        attributes: ['id', 'nombre'],
+      }),
+      Estado.findAll({
+        attributes: ['id', 'nombre']
+      }),
+      TipoDocumento.findAll({
+        attributes: ['id', 'nombre']
+      }),
+      GrupoSanguineo.findAll({
+        attributes: ['id', 'nombre']
+      }),
+      CategoriaLicencias.findAll({
+        attributes: ['id', 'nombre']
+      })
+    ]);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        roles,
+        estados,
+        tiposDocumento,
+        gruposSanguineos,
+        categoriasLicencia
+      },
+      message: "Opciones obtenidas exitosamente"
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error al obtener las opciones",
+      error: error.message
     });
   }
 };
