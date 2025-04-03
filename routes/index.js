@@ -23,4 +23,8 @@ router.use('/categorias-licencia', licenseCategoriesRoutes);
 router.use('/usuarios', usuarioRoutes);
 router.use('/autenticacion', authRoutes);
 
+router.get('/test', (req, res) => {
+    res.json({ message: 'API funcionando correctamente 🚀' });
+});
+
 module.exports = router;
