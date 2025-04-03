@@ -42,3 +42,8 @@ exports.login = async (req, res) => {
         return res.status(500).json({ message: 'Error en el servidor' });
     }
 };
+
+exports.logout = (req, res) => {
+    res.clearCookie('tokenAcceso');
+    return res.json({ message: 'Logout exitoso' });
+};
