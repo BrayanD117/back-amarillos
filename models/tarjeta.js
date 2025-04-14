@@ -17,16 +17,41 @@ module.exports = (sequelize, DataTypes) => {
       Tarjetas.belongsTo(models.Usuario, {
         foreignKey: 'idUsuario'
       });
+
+      Tarjetas.belongsTo(models.Tarifa, {
+        foreignKey: 'idTarifa'
+      });
     }
   }
   Tarjetas.init({
-    idVehiculo: DataTypes.INTEGER,
-    idUsuario: DataTypes.INTEGER,
-    idTarifa: DataTypes.INTEGER,
-    numero: DataTypes.STRING,
-    emision: DataTypes.DATE,
-    vence: DataTypes.DATE,
-    refrendacion: DataTypes.STRING
+    idVehiculo: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    idUsuario: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    idTarifa: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    numero: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    emision: {
+      type: DataTypes.DATE,
+      allowNull: false
+    },
+    vence: {
+      type: DataTypes.DATE,
+      allowNull: false
+    },
+    refrendacion: {
+      type: DataTypes.STRING,
+      allowNull: false
+    }
   }, {
     sequelize,
     modelName: 'Tarjetas',
