@@ -18,10 +18,23 @@ exports.createRole = async (req, res) => {
 
 exports.getAllRoles = async (req, res) => {
     try {
-        const roles = await Rol.findAll();
+        const { page = 1, limit = 10 } = req.query;
+        const offset = (page - 1) * limit;
+
+        const { count, rows: roles } = await Rol.findAndCountAll({
+            limit: parseInt(limit),
+            offset: parseInt(offset)
+        });
+
         res.status(200).json({
             success: true,
-            data: roles
+            data: roles,
+            pagination: {
+                total: count,
+                page: parseInt(page),
+                limit: parseInt(limit),
+                totalPages: Math.ceil(count / limit)
+            }
         });
     } catch (error) {
         res.status(500).json({
