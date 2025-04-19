@@ -2,13 +2,13 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Evaluaciones', {
+    await queryInterface.createTable('Reviews', {
       id: {
         allowNull: false,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      idVehiculo: {
+      vehicleId: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
@@ -16,9 +16,9 @@ module.exports = {
           key: 'id'
         },
         onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
+        onDelete: 'SET NULL'
       },
-      idPersona: {
+      personId: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
@@ -26,20 +26,20 @@ module.exports = {
           key: 'id'
         },
         onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
+        onDelete: 'SET NULL'
       },
-      idCalificacion: {
+      ratingId: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: 'Calificaciones',
+          model: 'Ratings',
           key: 'id'
         },
         onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
+        onDelete: 'SET NULL'
       },
-      observacion: {
-        type: Sequelize.STRING(500),
+      comment: {
+        type: Sequelize.TEXT,
         allowNull: false
       },
       createdAt: {
@@ -53,6 +53,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Evaluaciones');
+    await queryInterface.dropTable('Reviews');
   }
 };

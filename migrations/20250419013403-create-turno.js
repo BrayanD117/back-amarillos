@@ -3,13 +3,13 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Turnos', {
+    await queryInterface.createTable('Shifts', {
       id: {
         allowNull: false,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      idVehiculo: {
+      vehicleId: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
@@ -19,7 +19,7 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
       },
-      idPersona: {
+      personId: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
@@ -27,7 +27,7 @@ module.exports = {
           key: 'id'
         },
         onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
+        onDelete: 'SET NULL'
       },
       idEstado: {
         type: Sequelize.INTEGER,
@@ -37,7 +37,7 @@ module.exports = {
           key: 'id'
         },
         onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
+        onDelete: 'SET NULL'
       },
       createdAt: {
         allowNull: false,
@@ -51,6 +51,6 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Turnos');
+    await queryInterface.dropTable('Shifts');
   }
 };
