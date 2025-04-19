@@ -95,7 +95,8 @@ exports.getCardById = async (req, res) => {
     const card = await Tarjetas.findByPk(id, {
       include: [
         {
-          model: Vehiculo
+          model: Vehiculo,
+          attributes: ['id', 'placa'],
         },
         {
             model: Usuario,
@@ -103,12 +104,13 @@ exports.getCardById = async (req, res) => {
             include: [
               {
                 model: Persona,
-                attributes: ['numeroDocumento', 'primerNombre', 'primerApellido']
+                attributes: ['numeroDocumento']
               }
             ]
         },
         {
-          model: Tarifa
+          model: Tarifa,
+          attributes: ['id', 'minima']
         }]
     });
 
@@ -119,9 +121,17 @@ exports.getCardById = async (req, res) => {
       });
     }
 
+    const dto = card.toJSON(); 
+    if (dto.emision instanceof Date) {
+      dto.emision = dto.emision.toISOString().split('T')[0];
+    }
+    if (dto.vence instanceof Date) {
+      dto.vence = dto.vence.toISOString().split('T')[0];
+    }
+
     res.json({
       ok: true,
-      card
+      data: dto
     });
 
   } catch (error) {
@@ -156,19 +166,20 @@ exports.updateCard = async (req, res) => {
       });
     }
 
-    await card.update(idVehiculo, idUsuario, idTarifa, numero, emision, vence, refrendacion);
+    const updatedCard = await card.update({idVehiculo, idUsuario, idTarifa, numero, emision, vence, refrendacion});
 
     res.json({
       ok: true,
       msg: 'Tarjeta actualizada correctamente',
-      card
+      updatedCard
     });
 
   } catch (error) {
     console.log(error);
     res.status(500).json({
       ok: false,
-      msg: 'Error al actualizar la tarjeta.'
+      msg: 'Error al actualizar la tarjeta.',
+      error: error.message
     });
   }
 };
