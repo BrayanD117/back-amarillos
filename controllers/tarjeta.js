@@ -27,6 +27,9 @@ exports.getAllCards = async (req, res) => {
     const searchCondition = search
       ? {
           [Op.or]: [
+            where(fn('UPPER', col('id')), {
+              [Op.like]: `%${search}%`
+            }),
             where(fn('UPPER', col('Vehiculo.placa')), {
                 [Op.like]: `%${search}%`
             }),
@@ -199,40 +202,32 @@ exports.deleteCard = async (req, res) => {
   }
 };
 
-exports.getUserOptions = async (req, res) => {
+exports.getCardOptions = async (req, res) => {
   try {
-    const [roles, estados, tiposDocumento, gruposSanguineos, categoriasLicencia] = await Promise.all([
-      Rol.findAll({
-        attributes: ['id', 'nombre'],
+    const [vehicles, people, fares] = await Promise.all([
+      Vehiculo.findAll({
+        attributes: ['id', 'placa'],
       }),
-      Estado.findAll({
-        attributes: ['id', 'nombre']
+      Persona.findAll({
+        attributes: ['id', 'numeroDocumento']
       }),
-      TipoDocumento.findAll({
-        attributes: ['id', 'nombre']
-      }),
-      GrupoSanguineo.findAll({
-        attributes: ['id', 'nombre']
-      }),
-      CategoriaLicencias.findAll({
-        attributes: ['id', 'nombre']
+      Tarifa.findAll({
+        attributes: ['id', 'minima']
       })
     ]);
 
     res.status(200).json({
-      success: true,
+      ok: true,
       data: {
-        roles,
-        estados,
-        tiposDocumento,
-        gruposSanguineos,
-        categoriasLicencia
+        vehicles,
+        people,
+        fares
       },
       message: "Opciones obtenidas exitosamente"
     });
   } catch (error) {
     res.status(500).json({
-      success: false,
+      ok: false,
       message: "Error al obtener las opciones",
       error: error.message
     });
