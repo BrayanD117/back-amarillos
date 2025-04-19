@@ -6,9 +6,9 @@ const { verifyToken, isAdmin } = require('../middlewares/autenticacionJwt');
 router.post('/', cardController.createCard);
 
 
-//router.get('/opciones', usuarioController.getUserOptions);
 router.get('/', verifyToken, isAdmin, cardController.getAllCards);
 router.get('/:id', verifyToken, cardController.getCardById);
+router.get('/options', verifyToken, isAdmin, cardController.getCardOptions);
 
 
 router.put('/:id', verifyToken, isAdmin, cardController.updateCard);
