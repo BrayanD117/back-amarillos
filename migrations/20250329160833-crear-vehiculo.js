@@ -21,7 +21,7 @@ module.exports = {
       cardId: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'Tarjetas',
+          model: 'Cards',
           key: 'id'
         },
         onUpdate: 'CASCADE',
@@ -30,7 +30,7 @@ module.exports = {
       statusId: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'Estados',
+          model: 'Statuses',
           key: 'id'
         },
         onUpdate: 'CASCADE',
@@ -60,7 +60,7 @@ module.exports = {
       serviceId: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'Servicios',
+          model: 'Services',
           key: 'id'
         },
         onUpdate: 'CASCADE',
@@ -75,7 +75,7 @@ module.exports = {
       fuelId: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'Combustibles',
+          model: 'Fuels',
           key: 'id'
         },
         onUpdate: 'CASCADE',
