@@ -2,53 +2,53 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Tarjetas', {
+    await queryInterface.createTable('Cards', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      idVehiculo: {
+      vehicleId: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'Vehiculos',
+          model: 'Vehicles',
           key: 'id'
         },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
       },
-      idUsuario: {
+      userId: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'Usuarios',
+          model: 'Users',
           key: 'id'
         },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
       },
-      idTarifa: {
+      fareId: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'Tarifas',
+          model: 'Fares',
           key: 'id'
         },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
       },
-      numero: {
+      number: {
         type: Sequelize.STRING,
         allowNull: false
       },
-      emision: {
+      issueDate: {
         type: Sequelize.DATE,
         allowNull: false
       },
-      vence: {
+      expiryDate: {
         type: Sequelize.DATE,
         allowNull: false
       },
-      refrendacion: {
+      endorsement: {
         type: Sequelize.STRING,
         allowNull: true
       },
@@ -63,6 +63,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Tarjetas');
+    await queryInterface.dropTable('Cards');
   }
 };

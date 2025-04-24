@@ -3,60 +3,60 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Vehiculo extends Model {
+  class Vehicle extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      Vehiculo.belongsTo(models.Usuario, {
-        foreignKey: 'idUsuario'
+      Vehicle.belongsTo(models.User, {
+        foreignKey: 'userId'
       });
 
-      Vehiculo.belongsTo(models.Estado, {
-        foreignKey: 'idEstado'
+      Vehicle.belongsTo(models.Status, {
+        foreignKey: 'statusId'
       });
 
-      Vehiculo.belongsTo(models.Servicio, {
-        foreignKey: 'idServicio'
+      Vehicle.belongsTo(models.Service, {
+        foreignKey: 'serviceId'
       });
 
-      Vehiculo.belongsTo(models.Combustible, {
-        foreignKey: 'idCombustible'
+      Vehicle.belongsTo(models.Fuel, {
+        foreignKey: 'fuelId'
       });
     }
   }
-  Vehiculo.init({
-    idUsuario: {
+  Vehicle.init({
+    userId: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    idEstado: {
+    statusId: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    interno: {
+    internalNumber: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    placa: {
+    licensePlate: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    marca: {
+    brand: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    linea: {
+    line: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    modelo: {
+    model: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    cilindrada: {
+    displacement: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
@@ -64,61 +64,62 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false
     },
-    idServicio: {
+    serviceId: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    clase: {
+    vehicleClass: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    carroceria: {
+    bodyType: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    capacidad: {
+    capacity: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    motor: {
+    engine: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    chasis: {
+    chassis: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    importacion: {
+    importation: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    fechaImportacion: {
+    importDate: {
       type: DataTypes.DATE,
       allowNull: false
     },
-    puertas: {
+    doors: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    fechaMatricula: {
+    registrationDate: {
       type: DataTypes.DATE,
       allowNull: false
     },
-    fechaExpedicion: {
+    issueDate: {
       type: DataTypes.DATE,
       allowNull: false
     },
-    organismo: {
+    issuingAuthority: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    qr: {
+    qrCode: {
       type: DataTypes.STRING,
       allowNull: false
     }
   }, {
     sequelize,
-    modelName: 'Vehiculo',
+    modelName: 'Vehicle',
+    tableName: 'Vehicles',
   });
-  return Vehiculo;
+  return Vehicle;
 };

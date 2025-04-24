@@ -29,7 +29,7 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'SET NULL'
       },
-      idEstado: {
+      statusId: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {

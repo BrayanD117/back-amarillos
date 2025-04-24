@@ -3,40 +3,40 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Tarifa extends Model {
+  class Fare extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      Tarifa.hasMany(models.Tarjetas, { foreignKey: 'idTarifa' });
+      Fare.hasMany(models.Card, { foreignKey: 'fareId' });
     }
   }
-  Tarifa.init({
-    minima: {
+  Fare.init({
+    minimum: {
       type: DataTypes.DECIMAL,
       allowNull: false
     },
-    banderazo: {
+    flagDown: {
       type: DataTypes.DECIMAL,
       allowNull: false
     },
-    caida70m: {
+    drop70m: {
       type: DataTypes.DECIMAL,
       allowNull: false
     },
-    caida35s: {
+    drop35s: {
       type: DataTypes.DECIMAL,
       allowNull: false
     },
-    hora: {
+    hour: {
       type: DataTypes.TIME,
       allowNull: false
     }
   }, {
     sequelize,
-    modelName: 'Tarifa',
+    modelName: 'Fare',
   });
-  return Tarifa;
+  return Fare;
 };

@@ -2,83 +2,113 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Vehiculos', {
+    await queryInterface.createTable('Vehicles', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      idUsuario: {
-        type: Sequelize.INTEGER
+      userId: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'Users',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL'
       },
-      idTarjeta: {
-        type: Sequelize.INTEGER
+      cardId: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'Tarjetas',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL'
       },
-      idEstado: {
-        type: Sequelize.INTEGER
+      statusId: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'Estados',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL'
       },
-      interno: {
+      internalNumber: {
         type: Sequelize.STRING
       },
-      placa: {
+      licensePlate: {
         type: Sequelize.STRING
       },
-      marca: {
+      brand: {
         type: Sequelize.STRING
       },
-      linea: {
+      line: {
         type: Sequelize.STRING
       },
-      modelo: {
+      model: {
         type: Sequelize.INTEGER
       },
-      cilindrada: {
+      displacement: {
         type: Sequelize.INTEGER
       },
       color: {
         type: Sequelize.STRING
       },
-      idServicio: {
+      serviceId: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'Servicios',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL'
+      },
+      vehicleClass: {
+        type: Sequelize.STRING
+      },
+      bodyType: {
+        type: Sequelize.STRING
+      },
+      fuelId: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'Combustibles',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL'
+      },
+      capacity: {
         type: Sequelize.INTEGER
       },
-      clase: {
+      engine: {
         type: Sequelize.STRING
       },
-      carroceria: {
+      chassis: {
         type: Sequelize.STRING
       },
-      idCombustible: {
-        type: Sequelize.INTEGER
-      },
-      capacidad: {
-        type: Sequelize.INTEGER
-      },
-      motor: {
+      importation: {
         type: Sequelize.STRING
       },
-      chasis: {
-        type: Sequelize.STRING
-      },
-      importacion: {
-        type: Sequelize.STRING
-      },
-      fechaImportacion: {
+      importDate: {
         type: Sequelize.DATE
       },
-      puertas: {
+      doors: {
         type: Sequelize.INTEGER
       },
-      fechaMatricula: {
+      registrationDate: {
         type: Sequelize.DATE
       },
-      fechaExpedicion: {
+      issueDate: {
         type: Sequelize.DATE
       },
-      organismo: {
+      issuingAuthority: {
         type: Sequelize.STRING
       },
-      qr: {
+      qrCode: {
         type: Sequelize.STRING
       },
       createdAt: {
@@ -92,6 +122,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Vehiculos');
+    await queryInterface.dropTable('Vehicles');
   }
 };

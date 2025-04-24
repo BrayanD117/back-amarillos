@@ -2,30 +2,30 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Tarifas', {
+    await queryInterface.createTable('Fares', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      minima: {
+      minimum: {
         type: Sequelize.DECIMAL(10,2),
         allowNull: false
       },
-      banderazo: {
+      flagDown: {
         type: Sequelize.DECIMAL(10,2),
         allowNull: false
       },
-      caida70m: {
+      drop70m: {
         type: Sequelize.DECIMAL(10,2),
         allowNull: false
       },
-      caida35s: {
+      drop35s: {
         type: Sequelize.DECIMAL(10,2),
         allowNull: false
       },
-      hora: {
+      hour: {
         type: Sequelize.TIME,
         allowNull: false
       },
@@ -40,6 +40,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Tarifas');
+    await queryInterface.dropTable('Fares');
   }
 };

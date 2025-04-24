@@ -2,38 +2,38 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Personas', {
+    await queryInterface.createTable('People', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      idUsuario: {
+      userId: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: 'Usuarios',
+          model: 'Users',
           key: 'id'
         },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
       },
-      primerApellido: {
+      lastName: {
         type: Sequelize.STRING(50),
         allowNull: false,
       },
-      segundoApellido: {
+      secondLastName: {
         type: Sequelize.STRING(50)
       },
-      primerNombre: {
+      firstName: {
         type: Sequelize.STRING(50),
         allowNull: false,
       },
-      segundoNombre: {
+      middleName: {
         type: Sequelize.STRING(50)
       },
-      idTipoDocumento: {
+      documentTypeId: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
@@ -43,19 +43,19 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'SET NULL'
       },
-      numeroDocumento: {
+      documentNumber: {
         type: Sequelize.STRING(50),
         allowNull: false,
       },
-      direccion: {
+      address: {
         type: Sequelize.STRING(100),
         allowNull: false,
       },
-      telefono: {
+      phone: {
         type: Sequelize.STRING(20),
         allowNull: false,
       },
-      idGrupoSanguineo: {
+      bloodTypeId: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
@@ -65,15 +65,15 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'SET NULL'
       },
-      rh: {
+      rhFactor: {
         type: Sequelize.CHAR(1),
         allowNull: false,
       },
-      eps: {
+      healthInsurance: {
         type: Sequelize.STRING(100),
         allowNull: false,
       },
-      arl: {
+      workInsurance: {
         type: Sequelize.STRING(100),
         allowNull: false,
       },
@@ -81,11 +81,11 @@ module.exports = {
         type: Sequelize.STRING(100),
         allowNull: false,
       },
-      licencia: {
+      licenseNumber: {
         type: Sequelize.STRING(50),
         allowNull: false,
       },
-      idCategoriaLicencia: {
+      licenseCategoryId: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
@@ -95,15 +95,15 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'SET NULL'
       },
-      organismo: {
+      issuingAuthority: {
         type: Sequelize.STRING(100),
         allowNull: false,
       },
-      vigencia: {
+      expiryDate: {
         type: Sequelize.DATE,
         allowNull: false,
       },
-      foto: {
+      photo: {
         type: Sequelize.STRING
       },
       createdAt: {
@@ -117,6 +117,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Personas');
+    await queryInterface.dropTable('People');
   }
 };

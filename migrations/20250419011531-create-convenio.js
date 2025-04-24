@@ -14,6 +14,16 @@ module.exports = {
         type: Sequelize.FLOAT,
         allowNull: false,
       },
+      transportSecretaryId: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+          model: 'TransportSecretaries',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL'
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

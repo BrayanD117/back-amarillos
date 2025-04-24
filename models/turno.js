@@ -3,50 +3,48 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Turno extends Model {
+  class Shift extends Model {
     static associate(models) {
-      Turno.belongsTo(models.Vehiculo, {
-        foreignKey: 'idVehiculo',
-        as: 'vehiculo'
+      Shift.belongsTo(models.Vehiculo, {
+        foreignKey: 'vehicleId',
+        as: 'vehicle'
       });
       
-      Turno.belongsTo(models.Persona, {
-        foreignKey: 'idPersona',
-        as: 'persona'
+      Shift.belongsTo(models.Persona, {
+        foreignKey: 'personId',
+        as: 'person'
       });
 
-      Turno.belongsTo(models.Estado, {
-        foreignKey: 'idEstado',
-        as: 'estado'
+      Shift.belongsTo(models.Status, {
+        foreignKey: 'statusId',
+        as: 'status'
       });
     }
   }
-  Turno.init({
+  Shift.init({
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       allowNull: false
     },
-    idVehiculo: {
+    vehicleId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: 'idVehiculo'
+      field: 'vehicleId'
     },
-    idPersona: {
+    personId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: 'idPersona'
+      field: 'personId'
     },
-    idEstado: {
+    statusId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: 'idEstado'
+      field: 'statusId'
     }
   }, {
     sequelize,
-    modelName: 'Turno',
-    tableName: 'Turnos',
-    timestamps: true
+    modelName: 'Shift',
   });
-  return Turno;
+  return Shift;
 };

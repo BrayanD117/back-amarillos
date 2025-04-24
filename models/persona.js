@@ -3,63 +3,63 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Persona extends Model {
+  class Person extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      Persona.belongsTo(models.Usuario, { foreignKey: 'idUsuario' }); 
-      Persona.belongsTo(models.TipoDocumento, { foreignKey: 'idTipoDocumento' });
-      Persona.belongsTo(models.GrupoSanguineo, { foreignKey: 'idGrupoSanguineo' });
-      Persona.belongsTo(models.CategoriaLicencias, { foreignKey: 'idCategoriaLicencia' }); 
+      Person.belongsTo(models.User, { foreignKey: 'userId' }); 
+      Person.belongsTo(models.DocumentType, { foreignKey: 'documentTypeId' });
+      Person.belongsTo(models.BloodType, { foreignKey: 'bloodTypeId' });
+      Person.belongsTo(models.LicenseCategory, { foreignKey: 'licenseCategoryId' }); 
     }
   }
-  Persona.init({
-    idUsuario: {
+  Person.init({
+    userId: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    primerApellido: {
+    lastName: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    segundoApellido: DataTypes.STRING,
-    primerNombre: {
+    secondLastName: DataTypes.STRING,
+    firstName: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    segundoNombre: DataTypes.STRING,
-    idTipoDocumento: {
+    middleName: DataTypes.STRING,
+    documentTypeId: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    numeroDocumento: {
+    documentNumber: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    direccion: {
+    address: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    telefono: {
+    phone: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    idGrupoSanguineo: {
+    bloodTypeId: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    rh: {
+    rhFactor: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    eps: {
+    healthInsurance: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    arl: {
+    workInsurance: {
       type: DataTypes.STRING,
       allowNull: false
     },
@@ -67,26 +67,26 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false
     },
-    licencia: {
+    licenseNumber: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    idCategoriaLicencia: {
+    licenseCategoryId: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    organismo: {
+    issuingAuthority: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    vigencia: {
+    expiryDate: {
       type: DataTypes.DATE,
       allowNull: false
     },
-    foto: DataTypes.STRING
+    photo: DataTypes.STRING
   }, {
     sequelize,
-    modelName: 'Persona',
+    modelName: 'Person',
   });
-  return Persona;
+  return Person;
 };

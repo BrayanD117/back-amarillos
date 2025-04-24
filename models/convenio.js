@@ -3,33 +3,37 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Convenio extends Model {
+  class Agreement extends Model {
     static associate(models) {
-
+      Agreement.belongsTo(models.TransportSecretary, {
+        foreignKey: 'transportSecretaryId',
+        as: 'transportSecretary'
+      });
     }
   }
-  Convenio.init({
+  Agreement.init({
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
-      allowNull: false,
-      field: 'Id_Convenio'
+      allowNull: false
     },
-    nombre: {
+    name: {
       type: DataTypes.STRING(100),
-      allowNull: false,
-      field: 'Nombre'
+      allowNull: false
     },
-    kilometro: {
+    kilometer: {
       type: DataTypes.FLOAT,
-      allowNull: false,
-      field: 'Kilometro'
+      allowNull: false
+    },
+    transportSecretaryId: {
+      type: DataTypes.INTEGER,
+      allowNull: true
     }
   }, {
     sequelize,
-    modelName: 'Convenio',
-    tableName: 'Convenios',
+    modelName: 'Agreement',
+    tableName: 'Agreements',
     timestamps: true
   });
-  return Convenio;
+  return Agreement;
 };
