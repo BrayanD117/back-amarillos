@@ -24,13 +24,34 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Card.init({
-    vehicleId: DataTypes.INTEGER,
-    userId: DataTypes.INTEGER,
-    fareId: DataTypes.INTEGER,
-    number: DataTypes.STRING,
-    issueDate: DataTypes.DATE,
-    expiryDate: DataTypes.DATE,
-    endorsement: DataTypes.STRING
+    vehicleId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    fareId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    number: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    issueDate: {
+      type: DataTypes.DATE,
+      allowNull: false
+    },
+    expiryDate: {
+      type: DataTypes.DATE,
+      allowNull: false
+    },
+    endorsement: {
+      type: DataTypes.STRING,
+      allowNull: false
+    }
   }, {
     sequelize,
     modelName: 'Card',
