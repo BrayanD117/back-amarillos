@@ -1,9 +1,9 @@
-const { Tarjetas, Vehiculo, Usuario, Tarifa, Persona } = require('../models');
+const { Card, Vehicle, User, Fare, Person } = require('../models');
 const { Op, fn, col, where } = require('sequelize');
 
 exports.createCard = async (req, res) => {
     try {
-        const card = await Tarjetas.create(req.body);
+        const card = await Card.create(req.body);
         res.status(201).json({
             ok: true,
             data: card
@@ -30,43 +30,43 @@ exports.getAllCards = async (req, res) => {
             where(fn('UPPER', col('id')), {
               [Op.like]: `%${search}%`
             }),
-            where(fn('UPPER', col('Vehiculo.placa')), {
+            where(fn('UPPER', col('Vehicle.placa')), {
                 [Op.like]: `%${search}%`
             }),
-            where(fn('UPPER', col('Usuario.Persona.numeroDocumento')), {
+            where(fn('UPPER', col('User.Person.numeroDocumento')), {
               [Op.like]: `%${search}%`
             }),
-            where(fn('UPPER', col('Usuario.Persona.primerNombre')), {
+            where(fn('UPPER', col('User.Person.primerNombre')), {
               [Op.like]: `%${search}%`
             }),
-            where(fn('UPPER', col('Usuario.Persona.primerApellido')), {
+            where(fn('UPPER', col('User.Person.primerApellido')), {
               [Op.like]: `%${search}%`
             })
           ]
         }
       : {};
 
-    const { count, rows: cards } = await Tarjetas.findAndCountAll({
+    const { count, rows: cards } = await Card.findAndCountAll({
         where: searchCondition,
         offset,
         limit,
         include: [
             {
-                model: Vehiculo,
+                model: Vehicle,
                 attributes: ['placa']
             },
             {
-                model: Usuario,
+                model: User,
                 attributes: ['id'],
                 include: [
                   {
-                    model: Persona,
+                    model: Person,
                     attributes: ['numeroDocumento', 'primerNombre', 'primerApellido']
                   }
                 ]
             },
             {
-                model: Tarifa
+                model: Fare
             }
         ]
     });
@@ -92,24 +92,24 @@ exports.getCardById = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const card = await Tarjetas.findByPk(id, {
+    const card = await Card.findByPk(id, {
       include: [
         {
-          model: Vehiculo,
+          model: Vehicle,
           attributes: ['id', 'placa'],
         },
         {
-            model: Usuario,
+            model: User,
             attributes: ['id'],
             include: [
               {
-                model: Persona,
+                model: Person,
                 attributes: ['numeroDocumento']
               }
             ]
         },
         {
-          model: Tarifa,
+          model: Fare,
           attributes: ['id', 'minima']
         }]
     });
@@ -157,7 +157,7 @@ exports.updateCard = async (req, res) => {
   } = req.body;
 
   try {
-    const card = await Tarjetas.findByPk(id);
+    const card = await Card.findByPk(id);
 
     if (!card) {
       return res.status(404).json({
@@ -188,7 +188,7 @@ exports.deleteCard = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const card = await Tarjetas.findByPk(id);
+    const card = await Card.findByPk(id);
 
     if (!card) {
       return res.status(404).json({
@@ -216,13 +216,13 @@ exports.deleteCard = async (req, res) => {
 exports.getCardOptions = async (req, res) => {
   try {
     const [vehicles, people, fares] = await Promise.all([
-      Vehiculo.findAll({
+      Vehicle.findAll({
         attributes: ['id', 'placa'],
       }),
-      Persona.findAll({
+      Person.findAll({
         attributes: ['id', 'numeroDocumento']
       }),
-      Tarifa.findAll({
+      Fare.findAll({
         attributes: ['id', 'minima']
       })
     ]);

@@ -1,8 +1,8 @@
-const { Servicio } = require('../models');
+const { Service } = require('../models');
 
 exports.getAllServices = async (req, res) => {
     try {
-        const services = await Servicio.findAll();
+        const services = await Service.findAll();
         res.status(200).json(services);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -11,7 +11,7 @@ exports.getAllServices = async (req, res) => {
 
 exports.getServiceById = async (req, res) => {
     try {
-        const service = await Servicio.findByPk(req.params.id);
+        const service = await Service.findByPk(req.params.id);
         if (service) {
             res.status(200).json(service);
         } else {

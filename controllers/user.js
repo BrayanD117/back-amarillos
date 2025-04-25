@@ -1,4 +1,4 @@
-const { Usuario, Persona, TipoDocumento, GrupoSanguineo, CategoriaLicencias, Estado, Rol } = require('../models');
+const { User, Person, DocumentType, BloodType, LicenseCategory, Status, Role } = require('../models');
 const bcrypt = require('bcrypt');
 const { Op, fn, col, where } = require('sequelize');
 
@@ -37,7 +37,7 @@ exports.crearUsuario = async (req, res) => {
     let persona;
 
     try {
-      nuevoUsuario = await Usuario.create({
+      nuevoUsuario = await User.create({
         usuario,
         contrasenia: contraseniaHash,
         idRol,
@@ -45,7 +45,7 @@ exports.crearUsuario = async (req, res) => {
       });
 
       try {
-        persona = await Persona.create({
+        persona = await Person.create({
           primerApellido: primerApellido.toUpperCase(),
           segundoApellido: segundoApellido?.toUpperCase(),
           primerNombre: primerNombre.toUpperCase(),
@@ -68,7 +68,7 @@ exports.crearUsuario = async (req, res) => {
         });
 
       } catch (error) {
-        await Usuario.destroy({ where: { id: nuevoUsuario.id } });
+        await User.destroy({ where: { id: nuevoUsuario.id } });
         throw error;
       }
 
@@ -103,36 +103,36 @@ exports.obtenerUsuarios = async (req, res) => {
     const wherePersona = search
       ? {
           [Op.or]: [
-            where(fn('UPPER', col('Persona.numeroDocumento')), {
+            where(fn('UPPER', col('Person.numeroDocumento')), {
               [Op.like]: `%${search}%`
             }),
-            where(fn('UPPER', col('Persona.primerNombre')), {
+            where(fn('UPPER', col('Person.primerNombre')), {
               [Op.like]: `%${search}%`
             }),
-            where(fn('UPPER', col('Persona.primerApellido')), {
+            where(fn('UPPER', col('Person.primerApellido')), {
               [Op.like]: `%${search}%`
             })
           ]
         }
       : {};
 
-    const { count, rows: usuarios } = await Usuario.findAndCountAll({
+    const { count, rows: usuarios } = await User.findAndCountAll({
       offset,
       limit,
       include: [{
-        model: Persona,
+        model: Person,
         where: wherePersona,
         include: [
           {
-            model: TipoDocumento,
+            model: DocumentType,
             attributes: ['nombre']
           },
           {
-            model: GrupoSanguineo,
+            model: BloodType,
             attributes: ['nombre']
           },
           {
-            model: CategoriaLicencias,
+            model: LicenseCategory,
             attributes: ['nombre']
           }
         ]
@@ -160,20 +160,20 @@ exports.obtenerUsuarioPorId = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const usuario = await Usuario.findByPk(id, {
+    const usuario = await User.findByPk(id, {
       include: [{
-        model: Persona,
+        model: Person,
         include: [
           {
-            model: TipoDocumento,
+            model: DocumentType,
             attributes: ['nombre']
           },
           {
-            model: GrupoSanguineo,
+            model: BloodType,
             attributes: ['nombre']
           },
           {
-            model: CategoriaLicencias,
+            model: LicenseCategory,
             attributes: ['nombre']
           }
         ]
@@ -228,7 +228,7 @@ exports.actualizarUsuario = async (req, res) => {
   } = req.body;
 
   try {
-    const usuarioExistente = await Usuario.findByPk(id);
+    const usuarioExistente = await User.findByPk(id);
 
     if (!usuarioExistente) {
       return res.status(404).json({
@@ -245,7 +245,7 @@ exports.actualizarUsuario = async (req, res) => {
 
     await usuarioExistente.update(datosUsuario);
 
-    const personaExistente = await Persona.findOne({ where: { idUsuario: id } });
+    const personaExistente = await Person.findOne({ where: { idUsuario: id } });
 
     if (!personaExistente) {
       return res.status(404).json({
@@ -277,13 +277,13 @@ exports.actualizarUsuario = async (req, res) => {
 
     await personaExistente.update(datosPersona);
 
-    const usuarioActualizado = await Usuario.findByPk(id, {
+    const usuarioActualizado = await User.findByPk(id, {
       include: [{
-        model: Persona,
+        model: Person,
         include: [
-          { model: TipoDocumento },
-          { model: GrupoSanguineo },
-          { model: CategoriaLicencias }
+          { model: DocumentType },
+          { model: BloodType },
+          { model: LicenseCategory }
         ]
       }]
     });
@@ -306,7 +306,7 @@ exports.eliminarUsuario = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const usuario = await Usuario.findByPk(id);
+    const usuario = await User.findByPk(id);
 
     if (!usuario) {
       return res.status(404).json({
@@ -334,19 +334,19 @@ exports.eliminarUsuario = async (req, res) => {
 exports.getUserOptions = async (req, res) => {
   try {
     const [roles, estados, tiposDocumento, gruposSanguineos, categoriasLicencia] = await Promise.all([
-      Rol.findAll({
+      Role.findAll({
         attributes: ['id', 'nombre'],
       }),
-      Estado.findAll({
+      Status.findAll({
         attributes: ['id', 'nombre']
       }),
-      TipoDocumento.findAll({
+      DocumentType.findAll({
         attributes: ['id', 'nombre']
       }),
-      GrupoSanguineo.findAll({
+      BloodType.findAll({
         attributes: ['id', 'nombre']
       }),
-      CategoriaLicencias.findAll({
+      LicenseCategory.findAll({
         attributes: ['id', 'nombre']
       })
     ]);

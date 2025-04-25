@@ -1,8 +1,8 @@
-const { Rol } = require('../models');
+const { Role } = require('../models');
 
 exports.createRole = async (req, res) => {
     try {
-        const role = await Rol.create(req.body);
+        const role = await Role.create(req.body);
         res.status(201).json({
             success: true,
             data: role
@@ -21,7 +21,7 @@ exports.getAllRoles = async (req, res) => {
         const { page = 1, limit = 10 } = req.query;
         const offset = (page - 1) * limit;
 
-        const { count, rows: roles } = await Rol.findAndCountAll({
+        const { count, rows: roles } = await Role.findAndCountAll({
             limit: parseInt(limit),
             offset: parseInt(offset)
         });
@@ -47,7 +47,7 @@ exports.getAllRoles = async (req, res) => {
 
 exports.getRoleById = async (req, res) => {
     try {
-        const role = await Rol.findByPk(req.params.id);
+        const role = await Role.findByPk(req.params.id);
 
         if (!role) {
             return res.status(404).json({
@@ -71,7 +71,7 @@ exports.getRoleById = async (req, res) => {
 
 exports.updateRole = async (req, res) => {
     try {
-        const role = await Rol.findByPk(req.params.id);
+        const role = await Role.findByPk(req.params.id);
 
         if (!role) {
             return res.status(404).json({
@@ -98,7 +98,7 @@ exports.updateRole = async (req, res) => {
 
 exports.deleteRole = async (req, res) => {
     try {
-        const role = await Rol.findByPk(req.params.id);
+        const role = await Role.findByPk(req.params.id);
 
         if (!role) {
             return res.status(404).json({

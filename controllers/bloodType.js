@@ -1,8 +1,8 @@
-const { GrupoSanguineo } = require('../models');
+const { BloodType } = require('../models');
 
 exports.getAllBloodTypes = async (req, res) => {
     try {
-        const bloodTypes = await GrupoSanguineo.findAll();
+        const bloodTypes = await BloodType.findAll();
         res.status(200).json(bloodTypes);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -11,7 +11,7 @@ exports.getAllBloodTypes = async (req, res) => {
 
 exports.getBloodTypeById = async (req, res) => {
     try {
-        const bloodType = await GrupoSanguineo.findByPk(req.params.id);
+        const bloodType = await BloodType.findByPk(req.params.id);
         if (bloodType) {
             res.status(200).json(bloodType);
         } else {

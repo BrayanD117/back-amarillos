@@ -1,18 +1,18 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const { Usuario, Rol } = require('../models');
+const { User, Role } = require('../models');
 
 exports.login = async (req, res) => {
     try {
         const { usuario, contrasenia } = req.body;
 
-        const usuarioExistente = await Usuario.findOne({ where: { usuario }, include: Rol });
-        if (!usuarioExistente) return res.status(401).json({ message: 'Usuario no encontrado' });
+        const usuarioExistente = await User.findOne({ where: { usuario }, include: Role });
+        if (!usuarioExistente) return res.status(401).json({ message: 'User no encontrado' });
 
         const contraseniaValida = bcrypt.compareSync(contrasenia, usuarioExistente.contrasenia);
         if (!contraseniaValida) return res.status(401).json({ message: 'Contraseña incorrecta' });
     
-        const roleName = usuarioExistente.Rol.nombre;
+        const roleName = usuarioExistente.Role.nombre;
 
         const tokenPayload = {
             id: usuarioExistente.id,

@@ -1,8 +1,8 @@
-const { CategoriaLicencia } = require('../models');
+const { LicenseCategory } = require('../models');
 
 exports.getAllLicenseCategories = async (req, res) => {
     try {
-        const licenseCategories = await CategoriaLicencia.findAll();
+        const licenseCategories = await LicenseCategory.findAll();
         res.status(200).json(licenseCategories);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -11,7 +11,7 @@ exports.getAllLicenseCategories = async (req, res) => {
 
 exports.getLicenseCategoryById = async (req, res) => {
     try {
-        const licenseCategory = await CategoriaLicencia.findByPk(req.params.id);
+        const licenseCategory = await LicenseCategory.findByPk(req.params.id);
         if (licenseCategory) {
             res.status(200).json(licenseCategory);
         } else {

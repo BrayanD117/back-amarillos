@@ -1,11 +1,11 @@
-const { Vehiculo, Persona, Usuario, Estado, Servicio, Combustible, Tarjetas } = require('../models');
+const { Vehicle, Person, User, Status, Service, Fuel, Card } = require('../models');
 const { Op } = require('sequelize');
 
 exports.createVehicle = async (req, res) => {
     try {
-        const usuario = await Usuario.findOne({
+        const usuario = await User.findOne({
             include: [{
-                model: Persona,
+                model: Person,
                 where: {
                     numeroDocumento: req.body.cedula
                 }
@@ -19,7 +19,7 @@ exports.createVehicle = async (req, res) => {
             });
         }
 
-        const existingVehicle = await Vehiculo.findOne({
+        const existingVehicle = await Vehicle.findOne({
             where: {
                 placa: req.body.placa.toUpperCase()
             }
@@ -43,7 +43,7 @@ exports.createVehicle = async (req, res) => {
             }
         }
 
-        const vehicle = await Vehiculo.create(vehicleData);
+        const vehicle = await Vehicle.create(vehicleData);
         
         res.status(201).json({
             success: true,
@@ -74,7 +74,7 @@ exports.getAllVehicles = async (req, res) => {
             ]
         } : {};
 
-        const { count, rows: vehicles } = await Vehiculo.findAndCountAll({
+        const { count, rows: vehicles } = await Vehicle.findAndCountAll({
             where: whereClause,
             limit,
             offset
@@ -105,11 +105,11 @@ exports.getAllVehicles = async (req, res) => {
 
 exports.getVehicleById = async (req, res) => {
     try {
-        const vehicle = await Vehiculo.findByPk(req.params.id, {
+        const vehicle = await Vehicle.findByPk(req.params.id, {
             include: [{
-                model: Usuario,
+                model: User,
                 include: [{
-                    model: Persona,
+                    model: Person,
                     attributes: ['numeroDocumento']
                 }]
             }]
@@ -126,7 +126,7 @@ exports.getVehicleById = async (req, res) => {
             success: true,
             data: {
                 ...vehicle.toJSON(),
-                cedula: vehicle.Usuario.Persona.numeroDocumento
+                cedula: vehicle.User.Person.numeroDocumento
             }
         });
     } catch (error) {
@@ -140,7 +140,7 @@ exports.getVehicleById = async (req, res) => {
 
 exports.updateVehicle = async (req, res) => {
     try {
-        const vehicle = await Vehiculo.findByPk(req.params.id);
+        const vehicle = await Vehicle.findByPk(req.params.id);
 
         if (!vehicle) {
             return res.status(404).json({
@@ -149,9 +149,9 @@ exports.updateVehicle = async (req, res) => {
             });
         }
 
-        const usuario = await Usuario.findOne({
+        const usuario = await User.findOne({
             include: [{
-                model: Persona,
+                model: Person,
                 where: {
                     numeroDocumento: req.body.cedula
                 }
@@ -165,7 +165,7 @@ exports.updateVehicle = async (req, res) => {
             });
         }
 
-        const existingVehicle = await Vehiculo.findOne({
+        const existingVehicle = await Vehicle.findOne({
             where: {
                 placa: req.body.placa.toUpperCase(),
                 id: { [Op.ne]: vehicle.id }
@@ -208,7 +208,7 @@ exports.updateVehicle = async (req, res) => {
 
 exports.deleteVehicle = async (req, res) => {
     try {
-        const vehicle = await Vehiculo.findByPk(req.params.id);
+        const vehicle = await Vehicle.findByPk(req.params.id);
 
         if (!vehicle) {
             return res.status(404).json({
@@ -235,19 +235,19 @@ exports.deleteVehicle = async (req, res) => {
 exports.getVehicleOptions = async (req, res) => {
     try {
         const [usuarios, estados, servicios, combustibles, tarjetas] = await Promise.all([
-            Usuario.findAll({
+            User.findAll({
                 attributes: ['id'],
             }),
-            Estado.findAll({
+            Status.findAll({
                 attributes: ['id', 'nombre']
             }),
-            Servicio.findAll({
+            Service.findAll({
                 attributes: ['id', 'nombre'] 
             }),
-            Combustible.findAll({
+            Fuel.findAll({
                 attributes: ['id', 'nombre']
             }),
-            Tarjetas.findAll({
+            Card.findAll({
                 attributes: ['id', 'numero']
             })
         ]);
@@ -275,26 +275,26 @@ exports.getVehicleOptions = async (req, res) => {
 
 exports.getVehicleWithRelations = async (req, res) => {
     try {
-        const vehicle = await Vehiculo.findByPk(req.params.id, {
+        const vehicle = await Vehicle.findByPk(req.params.id, {
             include: [
                 {
-                    model: Usuario,
+                    model: User,
                     attributes: ['id', 'nombre', 'apellido']
                 },
                 {
-                    model: Estado,
+                    model: Status,
                     attributes: ['id', 'nombre']
                 },
                 {
-                    model: Servicio,
+                    model: Service,
                     attributes: ['id', 'nombre']
                 },
                 {
-                    model: Combustible,
+                    model: Fuel,
                     attributes: ['id', 'nombre']
                 },
                 {
-                    model: Tarjetas,
+                    model: Card,
                     attributes: ['id', 'numero']
                 }
             ]

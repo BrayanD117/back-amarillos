@@ -1,8 +1,8 @@
-const { Combustible } = require('../models');
+const { Fuel } = require('../models');
 
 exports.getAllFuels = async (req, res) => {
     try {
-        const fuels = await Combustible.findAll();
+        const fuels = await Fuel.findAll();
         res.status(200).json(fuels);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -11,7 +11,7 @@ exports.getAllFuels = async (req, res) => {
 
 exports.getFuelById = async (req, res) => {
     try {
-        const fuel = await Combustible.findByPk(req.params.id);
+        const fuel = await Fuel.findByPk(req.params.id);
         if (fuel) {
             res.status(200).json(fuel);
         } else {
