@@ -9,17 +9,15 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      TransportSecretary.belongsTo(models.City, {
-        foreignKey: "cityId",
-      });
+      TransportSecretary.belongsTo(models.City, { foreignKey: "cityId" });
 
-      TransportSecretary.belongsTo(models.Status, {
-        foreignKey: "statusId",
-      });
+      TransportSecretary.belongsTo(models.Status, { foreignKey: "statusId"});
 
-      TransportSecretary.hasMany(models.Agreement, {
-        foreignKey: "transportSecretaryId",
-      });
+      TransportSecretary.hasMany(models.Agreement, { foreignKey: "transportSecretaryId" });
+
+      TransportSecretary.hasMany(models.Company, { foreignKey: "transportSecretaryId" });
+
+      TransportSecretary.hasMany(models.Surcharge, { foreignKey: "transportSecretaryId" });
     }
   }
 
@@ -27,44 +25,29 @@ module.exports = (sequelize, DataTypes) => {
     {
       name: {
         type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          notEmpty: true,
-        },
+        allowNull: false
       },
       cityId: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-          model: "Cities",
-          key: "id",
-        },
+        allowNull: false
       },
       address: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: false
       },
       phone: {
         type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          notEmpty: true,
-        },
+        allowNull: false
       },
       statusId: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-          model: "Estados",
-          key: "id",
-        },
-      },
+        allowNull: false
+      }
     },
     {
       sequelize,
       modelName: "TransportSecretary",
     }
   );
-
   return TransportSecretary;
 };

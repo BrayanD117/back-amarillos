@@ -16,6 +16,7 @@ module.exports = (sequelize, DataTypes) => {
       Person.belongsTo(models.LicenseCategory, { foreignKey: 'licenseCategoryId' }); 
 
       Person.hasMany(models.Control, { foreignKey: 'personId' });
+      Person.hasMany(models.Company, { foreignKey: "legalRepresentativeId" });
     }
   }
   Person.init({
