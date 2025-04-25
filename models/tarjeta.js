@@ -44,7 +44,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DATE,
       allowNull: false
     },
-    expiryDate: {
+    expirationDate: {
       type: DataTypes.DATE,
       allowNull: false
     },
@@ -54,8 +54,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }, {
     sequelize,
-    modelName: 'Card',
-    tableName: 'Cards',
+    modelName: 'Card'
   });
   return Card;
 };

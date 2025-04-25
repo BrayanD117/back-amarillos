@@ -9,20 +9,30 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      transportSecretaryId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'TransportSecretaries',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL'
+      },
       minimum: {
-        type: Sequelize.DECIMAL(10,2),
+        type: Sequelize.FLOAT,
         allowNull: false
       },
       flagDown: {
-        type: Sequelize.DECIMAL(10,2),
+        type: Sequelize.FLOAT,
         allowNull: false
       },
       drop70m: {
-        type: Sequelize.DECIMAL(10,2),
+        type: Sequelize.FLOAT,
         allowNull: false
       },
       drop35s: {
-        type: Sequelize.DECIMAL(10,2),
+        type: Sequelize.FLOAT,
         allowNull: false
       },
       hour: {

@@ -28,15 +28,15 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false
       },
-      phone: {
-        type: Sequelize.STRING,
+      phoneNumber: {
+        type: Sequelize.STRING(10),
         allowNull: false
       },
       statusId: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: 'Statuses',
+          model: 'Status',
           key: 'id'
         },
         onUpdate: 'CASCADE',

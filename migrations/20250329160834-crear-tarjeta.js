@@ -11,6 +11,7 @@ module.exports = {
       },
       vehicleId: {
         type: Sequelize.INTEGER,
+        allowNull: false,
         references: {
           model: 'Vehicles',
           key: 'id'
@@ -18,8 +19,9 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
       },
-      userId: {
+      personId: {
         type: Sequelize.INTEGER,
+        allowNull: false,
         references: {
           model: 'Users',
           key: 'id'
@@ -29,6 +31,7 @@ module.exports = {
       },
       fareId: {
         type: Sequelize.INTEGER,
+        allowNull: false,
         references: {
           model: 'Fares',
           key: 'id'
@@ -44,7 +47,7 @@ module.exports = {
         type: Sequelize.DATE,
         allowNull: false
       },
-      expiryDate: {
+      expirationDate: {
         type: Sequelize.DATE,
         allowNull: false
       },

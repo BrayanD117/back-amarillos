@@ -29,12 +29,12 @@ module.exports = {
         onDelete: 'SET NULL'
       },
       rating: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.CHAR(1),
         allowNull: false,
       },
       comment: {
         type: Sequelize.TEXT,
-        allowNull: false
+        allowNull: true
       },
       createdAt: {
         allowNull: false,

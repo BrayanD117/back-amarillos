@@ -13,7 +13,8 @@ module.exports = (sequelize, DataTypes) => {
       Person.belongsTo(models.User, { foreignKey: 'userId' }); 
       Person.belongsTo(models.DocumentType, { foreignKey: 'documentTypeId' });
       Person.belongsTo(models.BloodType, { foreignKey: 'bloodTypeId' });
-      Person.belongsTo(models.LicenseCategory, { foreignKey: 'licenseCategoryId' }); 
+      Person.belongsTo(models.LicenseCategory, { foreignKey: 'licenseCategoryId' });
+      Person.belongsTo(models.TransportSecretary, { foreignKey: 'transportSecretaryId' });
 
       Person.hasMany(models.Control, { foreignKey: 'personId' });
       Person.hasMany(models.Company, { foreignKey: "legalRepresentativeId" });
@@ -78,11 +79,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    issuingAuthority: {
-      type: DataTypes.STRING,
+    transportSecretaryId: {
+      type: DataTypes.INTEGER,
       allowNull: false
     },
-    expiryDate: {
+    expirationDate: {
       type: DataTypes.DATE,
       allowNull: false
     },

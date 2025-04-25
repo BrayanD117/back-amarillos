@@ -10,21 +10,11 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      Vehicle.belongsTo(models.User, {
-        foreignKey: 'userId'
-      });
-
-      Vehicle.belongsTo(models.Status, {
-        foreignKey: 'statusId'
-      });
-
-      Vehicle.belongsTo(models.Service, {
-        foreignKey: 'serviceId'
-      });
-
-      Vehicle.belongsTo(models.Fuel, {
-        foreignKey: 'fuelId'
-      });
+      Vehicle.belongsTo(models.User, { foreignKey: 'userId' });
+      Vehicle.belongsTo(models.Status, { foreignKey: 'statusId' });
+      Vehicle.belongsTo(models.Service, { foreignKey: 'serviceId' });
+      Vehicle.belongsTo(models.Fuel, { foreignKey: 'fuelId' });
+      Vehicle.belongsTo(models.TransportSecretary, { foreignKey: 'transportSecretaryId' });
 
       Vehicle.hasMany(models.Control, { foreignKey: 'vehicleId' });
       Vehicle.hasMany(models.Requirement, { foreignKey: 'vehicleId' });
@@ -111,8 +101,8 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DATE,
       allowNull: false
     },
-    issuingAuthority: {
-      type: DataTypes.STRING,
+    transportSecretaryId: {
+      type: DataTypes.INTEGER,
       allowNull: false
     },
     qrCode: {
@@ -121,8 +111,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }, {
     sequelize,
-    modelName: 'Vehicle',
-    tableName: 'Vehicles',
+    modelName: 'Vehicle'
   });
   return Vehicle;
 };

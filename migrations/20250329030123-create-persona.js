@@ -9,6 +9,16 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      companyId: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+          model: 'Companies',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL'
+      },
       userId: {
         type: Sequelize.INTEGER,
         allowNull: false,
@@ -30,7 +40,7 @@ module.exports = {
         type: Sequelize.STRING(50),
         allowNull: false,
       },
-      middleName: {
+      secondName: {
         type: Sequelize.STRING(50)
       },
       documentTypeId: {
@@ -95,11 +105,17 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'SET NULL'
       },
-      issuingAuthority: {
-        type: Sequelize.STRING(100),
+      transportSecretaryId: {
+        type: Sequelize.INTEGER,
         allowNull: false,
+        references: {
+          model: 'TransportSecretaries',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL'
       },
-      expiryDate: {
+      expirationDate: {
         type: Sequelize.DATE,
         allowNull: false,
       },

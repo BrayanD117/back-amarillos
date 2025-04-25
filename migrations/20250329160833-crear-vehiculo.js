@@ -9,19 +9,21 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      userId: {
+      companyId: {
         type: Sequelize.INTEGER,
+        allowNull: true,
         references: {
-          model: 'Users',
+          model: 'Companies',
           key: 'id'
         },
         onUpdate: 'CASCADE',
         onDelete: 'SET NULL'
       },
-      cardId: {
+      personId: {
         type: Sequelize.INTEGER,
+        allowNull: false,
         references: {
-          model: 'Cards',
+          model: 'People',
           key: 'id'
         },
         onUpdate: 'CASCADE',
@@ -29,36 +31,45 @@ module.exports = {
       },
       statusId: {
         type: Sequelize.INTEGER,
+        allowNull: false,
         references: {
-          model: 'Statuses',
+          model: 'Status',
           key: 'id'
         },
         onUpdate: 'CASCADE',
         onDelete: 'SET NULL'
       },
       internalNumber: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false        
       },
       licensePlate: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false
       },
       brand: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false
       },
       line: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false
       },
       model: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        allowNull: false
       },
-      displacement: {
-        type: Sequelize.INTEGER
+      cylinderCapacity: {
+        type: Sequelize.INTEGER,
+        allowNull: false
       },
       color: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false
       },
       serviceId: {
         type: Sequelize.INTEGER,
+        allowNull: false,
         references: {
           model: 'Services',
           key: 'id'
@@ -67,13 +78,16 @@ module.exports = {
         onDelete: 'SET NULL'
       },
       vehicleClass: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false
       },
       bodyType: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false
       },
       fuelId: {
         type: Sequelize.INTEGER,
+        allowNull: false,
         references: {
           model: 'Fuels',
           key: 'id'
@@ -82,34 +96,50 @@ module.exports = {
         onDelete: 'SET NULL'
       },
       capacity: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER(2),
+        allowNull: false
       },
       engine: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false
       },
       chassis: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false
       },
       importation: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false
       },
       importDate: {
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        allowNull: false
       },
       doors: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER(2),
+        allowNull: false
       },
       registrationDate: {
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        allowNull: false
       },
       issueDate: {
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        allowNull: false
       },
-      issuingAuthority: {
-        type: Sequelize.STRING
+      transportSecretaryId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'TransportSecretaries',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL'
       },
       qrCode: {
-        type: Sequelize.STRING
+        type: Sequelize.TEXT,
+        allowNull: false
       },
       createdAt: {
         allowNull: false,

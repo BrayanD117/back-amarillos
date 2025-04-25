@@ -11,9 +11,15 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       Fare.hasMany(models.Card, { foreignKey: 'fareId' });
+
+      Fare.belongsTo(models.TransportSecretary, { foreignKey: 'transportSecretaryId' });
     }
   }
   Fare.init({
+    transportSecretaryId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
     minimum: {
       type: DataTypes.DECIMAL,
       allowNull: false

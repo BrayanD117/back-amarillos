@@ -10,14 +10,14 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       TransportSecretary.belongsTo(models.City, { foreignKey: "cityId" });
-
       TransportSecretary.belongsTo(models.Status, { foreignKey: "statusId"});
 
       TransportSecretary.hasMany(models.Agreement, { foreignKey: "transportSecretaryId" });
-
       TransportSecretary.hasMany(models.Company, { foreignKey: "transportSecretaryId" });
-
       TransportSecretary.hasMany(models.Surcharge, { foreignKey: "transportSecretaryId" });
+      TransportSecretary.hasMany(models.Person, { foreignKey: "transportSecretaryId" });
+      TransportSecretary.hasMany(models.Vehicle, { foreignKey: "transportSecretaryId" });
+      TransportSecretary.hasMany(models.Fare, { foreignKey: "transportSecretaryId" });
     }
   }
 
