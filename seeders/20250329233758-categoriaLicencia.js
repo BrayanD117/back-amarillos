@@ -3,63 +3,63 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
-    await queryInterface.bulkInsert('CategoriaLicencias', [{
-      nombre: 'A1',
+    await queryInterface.bulkInsert('LicenseCategories', [{
+      name: 'A1',
       createdAt: new Date(),
       updatedAt: new Date()
     }], {});
 
-    await queryInterface.bulkInsert('CategoriaLicencias', [{
-      nombre: 'A2',
+    await queryInterface.bulkInsert('LicenseCategories', [{
+      name: 'A2',
       createdAt: new Date(),
       updatedAt: new Date()
     }], {});
 
-    await queryInterface.bulkInsert('CategoriaLicencias', [{
-      nombre: 'B1',
+    await queryInterface.bulkInsert('LicenseCategories', [{
+      name: 'B1',
       createdAt: new Date(),
       updatedAt: new Date()
     }], {});
 
-    await queryInterface.bulkInsert('CategoriaLicencias', [{
-      nombre: 'B2',
+    await queryInterface.bulkInsert('LicenseCategories', [{
+      name: 'B2',
       createdAt: new Date(),
       updatedAt: new Date()
     }], {});
 
-    await queryInterface.bulkInsert('CategoriaLicencias', [{
-      nombre: 'B3',
+    await queryInterface.bulkInsert('LicenseCategories', [{
+      name: 'B3',
       createdAt: new Date(),
       updatedAt: new Date()
     }], {});
 
-    await queryInterface.bulkInsert('CategoriaLicencias', [{
-      nombre: 'C1',
+    await queryInterface.bulkInsert('LicenseCategories', [{
+      name: 'C1',
       createdAt: new Date(),
       updatedAt: new Date()
     }], {});
 
-    await queryInterface.bulkInsert('CategoriaLicencias', [{
-      nombre: 'C2',
+    await queryInterface.bulkInsert('LicenseCategories', [{
+      name: 'C2',
       createdAt: new Date(),
       updatedAt: new Date()
     }], {});
 
-    await queryInterface.bulkInsert('CategoriaLicencias', [{
-      nombre: 'C3',
+    await queryInterface.bulkInsert('LicenseCategories', [{
+      name: 'C3',
       createdAt: new Date(),
       updatedAt: new Date()
     }], {});
   },
 
   async down (queryInterface, Sequelize) {
-    await queryInterface.bulkDelete('CategoriaLicencias', null, {});
-    await queryInterface.bulkDelete('CategoriaLicencias', null, {});
-    await queryInterface.bulkDelete('CategoriaLicencias', null, {});
-    await queryInterface.bulkDelete('CategoriaLicencias', null, {});
-    await queryInterface.bulkDelete('CategoriaLicencias', null, {});
-    await queryInterface.bulkDelete('CategoriaLicencias', null, {});
-    await queryInterface.bulkDelete('CategoriaLicencias', null, {});
-    await queryInterface.bulkDelete('CategoriaLicencias', null, {});
+    await queryInterface.bulkDelete('LicenseCategories', null, {});
+    await queryInterface.bulkDelete('LicenseCategories', null, {});
+    await queryInterface.bulkDelete('LicenseCategories', null, {});
+    await queryInterface.bulkDelete('LicenseCategories', null, {});
+    await queryInterface.bulkDelete('LicenseCategories', null, {});
+    await queryInterface.bulkDelete('LicenseCategories', null, {});
+    await queryInterface.bulkDelete('LicenseCategories', null, {});
+    await queryInterface.bulkDelete('LicenseCategories', null, {});
   }
 };

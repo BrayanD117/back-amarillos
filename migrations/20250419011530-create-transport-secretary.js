@@ -1,43 +1,46 @@
 'use strict';
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Fares', {
+    await queryInterface.createTable('TransportSecretaries', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      transportSecretaryId: {
+      name: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
+      cityId: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: 'TransportSecretaries',
+          model: 'Cities',
           key: 'id'
         },
         onUpdate: 'CASCADE',
         onDelete: 'SET NULL'
       },
-      minimum: {
-        type: Sequelize.FLOAT,
+      address: {
+        type: Sequelize.STRING,
         allowNull: false
       },
-      flagDown: {
-        type: Sequelize.FLOAT,
+      phoneNumber: {
+        type: Sequelize.STRING(10),
         allowNull: false
       },
-      drop70m: {
-        type: Sequelize.FLOAT,
-        allowNull: false
-      },
-      drop35s: {
-        type: Sequelize.FLOAT,
-        allowNull: false
-      },
-      hour: {
-        type: Sequelize.TIME,
-        allowNull: false
+      statusId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'Status',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL'
       },
       createdAt: {
         allowNull: false,
@@ -49,7 +52,8 @@ module.exports = {
       }
     });
   },
+
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Fares');
+    await queryInterface.dropTable('TransportSecretaries');
   }
 };

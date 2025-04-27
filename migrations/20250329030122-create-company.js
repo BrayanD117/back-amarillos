@@ -2,7 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Fares', {
+    await queryInterface.createTable('Companies', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -19,24 +19,38 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'SET NULL'
       },
-      minimum: {
-        type: Sequelize.FLOAT,
+      companyType: {
+        type: Sequelize.STRING,
         allowNull: false
       },
-      flagDown: {
-        type: Sequelize.FLOAT,
+      name: {
+        type: Sequelize.STRING,
         allowNull: false
       },
-      drop70m: {
-        type: Sequelize.FLOAT,
+      nit: {
+        type: Sequelize.STRING,
         allowNull: false
       },
-      drop35s: {
-        type: Sequelize.FLOAT,
+      legalRepresentativeId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'People',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL'
+      },
+      address: {
+        type: Sequelize.STRING,
         allowNull: false
       },
-      hour: {
-        type: Sequelize.TIME,
+      phoneNumber: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
+      email: {
+        type: Sequelize.STRING,
         allowNull: false
       },
       createdAt: {
@@ -50,6 +64,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Fares');
+    await queryInterface.dropTable('Companies');
   }
 };

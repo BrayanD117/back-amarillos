@@ -3,35 +3,35 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
-    await queryInterface.bulkInsert('GrupoSanguineos', [{
-      nombre: 'A',
+    await queryInterface.bulkInsert('BloodTypes', [{
+      name: 'A',
       createdAt: new Date(),
       updatedAt: new Date()
     }], {});
 
-    await queryInterface.bulkInsert('GrupoSanguineos', [{
-      nombre: 'B',
+    await queryInterface.bulkInsert('BloodTypes', [{
+      name: 'B',
       createdAt: new Date(),
       updatedAt: new Date()
     }], {});
 
-    await queryInterface.bulkInsert('GrupoSanguineos', [{
-      nombre: 'AB',
+    await queryInterface.bulkInsert('BloodTypes', [{
+      name: 'AB',
       createdAt: new Date(),
       updatedAt: new Date()
     }], {});
 
-    await queryInterface.bulkInsert('GrupoSanguineos', [{
-      nombre: 'O',
+    await queryInterface.bulkInsert('BloodTypes', [{
+      name: 'O',
       createdAt: new Date(),
       updatedAt: new Date()
     }], {});
   },
 
   async down (queryInterface, Sequelize) {
-    await queryInterface.bulkDelete('GrupoSanguineos', null, {});
-    await queryInterface.bulkDelete('GrupoSanguineos', null, {});
-    await queryInterface.bulkDelete('GrupoSanguineos', null, {});
-    await queryInterface.bulkDelete('GrupoSanguineos', null, {});
+    await queryInterface.bulkDelete('BloodTypes', null, {});
+    await queryInterface.bulkDelete('BloodTypes', null, {});
+    await queryInterface.bulkDelete('BloodTypes', null, {});
+    await queryInterface.bulkDelete('BloodTypes', null, {});
   }
 };

@@ -2,7 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Fares', {
+    await queryInterface.createTable('Surcharges', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -19,24 +19,16 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'SET NULL'
       },
-      minimum: {
+      airport: {
         type: Sequelize.FLOAT,
         allowNull: false
       },
-      flagDown: {
+      terminal: {
         type: Sequelize.FLOAT,
         allowNull: false
       },
-      drop70m: {
-        type: Sequelize.FLOAT,
-        allowNull: false
-      },
-      drop35s: {
-        type: Sequelize.FLOAT,
-        allowNull: false
-      },
-      hour: {
-        type: Sequelize.TIME,
+      law: {
+        type: Sequelize.STRING,
         allowNull: false
       },
       createdAt: {
@@ -50,6 +42,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Fares');
+    await queryInterface.dropTable('Surcharges');
   }
 };
