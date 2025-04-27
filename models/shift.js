@@ -7,17 +7,14 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       Shift.belongsTo(models.Vehicle, {
         foreignKey: 'vehicleId',
-        as: 'vehicle'
       });
       
       Shift.belongsTo(models.Person, {
         foreignKey: 'personId',
-        as: 'person'
       });
 
       Shift.belongsTo(models.Status, {
         foreignKey: 'statusId',
-        as: 'status'
       });
     }
   }
