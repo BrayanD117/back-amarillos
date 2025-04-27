@@ -5,12 +5,12 @@ const {
 module.exports = (sequelize, DataTypes) => {
   class Shift extends Model {
     static associate(models) {
-      Shift.belongsTo(models.Vehiculo, {
+      Shift.belongsTo(models.Vehicle, {
         foreignKey: 'vehicleId',
         as: 'vehicle'
       });
       
-      Shift.belongsTo(models.Persona, {
+      Shift.belongsTo(models.Person, {
         foreignKey: 'personId',
         as: 'person'
       });
