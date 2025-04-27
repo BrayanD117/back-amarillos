@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const statusController = require('../controllers/estado');
-const { verifyToken } = require('../middlewares/autenticacionJwt');
+const statusController = require('../controllers/status');
+const { verifyToken } = require('../middlewares/authJwt');
 
 router.post('/', verifyToken, statusController.createStatus);
 router.get('/', verifyToken, statusController.getAllStatus);

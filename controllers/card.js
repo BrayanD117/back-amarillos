@@ -30,16 +30,16 @@ exports.getAllCards = async (req, res) => {
             where(fn('UPPER', col('id')), {
               [Op.like]: `%${search}%`
             }),
-            where(fn('UPPER', col('Vehicle.placa')), {
+            where(fn('UPPER', col('Vehicle.licensePlate')), {
                 [Op.like]: `%${search}%`
             }),
-            where(fn('UPPER', col('User.Person.numeroDocumento')), {
+            where(fn('UPPER', col('User.Person.documentNumber')), {
               [Op.like]: `%${search}%`
             }),
-            where(fn('UPPER', col('User.Person.primerNombre')), {
+            where(fn('UPPER', col('User.Person.firstName')), {
               [Op.like]: `%${search}%`
             }),
-            where(fn('UPPER', col('User.Person.primerApellido')), {
+            where(fn('UPPER', col('User.Person.lastName')), {
               [Op.like]: `%${search}%`
             })
           ]
@@ -53,7 +53,7 @@ exports.getAllCards = async (req, res) => {
         include: [
             {
                 model: Vehicle,
-                attributes: ['placa']
+                attributes: ['licensePlate']
             },
             {
                 model: User,
@@ -61,12 +61,12 @@ exports.getAllCards = async (req, res) => {
                 include: [
                   {
                     model: Person,
-                    attributes: ['numeroDocumento', 'primerNombre', 'primerApellido']
+                    attributes: ['documentNumber', 'firstName', 'lastName']
                   }
                 ]
             },
             {
-                model: Fare
+              model: Fare
             }
         ]
     });
@@ -96,7 +96,7 @@ exports.getCardById = async (req, res) => {
       include: [
         {
           model: Vehicle,
-          attributes: ['id', 'placa'],
+          attributes: ['id', 'licensePlate'],
         },
         {
             model: User,
@@ -104,13 +104,13 @@ exports.getCardById = async (req, res) => {
             include: [
               {
                 model: Person,
-                attributes: ['numeroDocumento']
+                attributes: ['documentNumber']
               }
             ]
         },
         {
           model: Fare,
-          attributes: ['id', 'minima']
+          attributes: ['id', 'minimum']
         }]
     });
 
@@ -147,13 +147,13 @@ exports.updateCard = async (req, res) => {
   const { id } = req.params;
 
   const {
-    idVehiculo,
-    idUsuario,
-    idTarifa,
-    numero,
-    emision,
-    vence,
-    refrendacion
+    vehicleId,
+    userId,
+    fareId,
+    number,
+    issueDate,
+    expirationDate,
+    endorsement
   } = req.body;
 
   try {
@@ -166,7 +166,15 @@ exports.updateCard = async (req, res) => {
       });
     }
 
-    const updatedCard = await card.update({idVehiculo, idUsuario, idTarifa, numero, emision, vence, refrendacion});
+    const updatedCard = await card.update({
+      vehicleId,
+      userId,
+      fareId,
+      number,
+      issueDate,
+      expirationDate,
+      endorsement
+    });
 
     res.json({
       ok: true,
@@ -217,13 +225,13 @@ exports.getCardOptions = async (req, res) => {
   try {
     const [vehicles, people, fares] = await Promise.all([
       Vehicle.findAll({
-        attributes: ['id', 'placa'],
+        attributes: ['id', 'licensePlate'],
       }),
       Person.findAll({
-        attributes: ['id', 'numeroDocumento']
+        attributes: ['id', 'documentNumber']
       }),
       Fare.findAll({
-        attributes: ['id', 'minima']
+        attributes: ['id', 'minimum']
       })
     ]);
 

@@ -34,7 +34,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false
     },
-    middleName: DataTypes.STRING,
+    secondName: DataTypes.STRING,
     documentTypeId: {
       type: DataTypes.INTEGER,
       allowNull: false
@@ -47,7 +47,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false
     },
-    phone: {
+    phoneNumber: {
       type: DataTypes.STRING,
       allowNull: false
     },

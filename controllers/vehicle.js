@@ -3,16 +3,16 @@ const { Op } = require('sequelize');
 
 exports.createVehicle = async (req, res) => {
     try {
-        const usuario = await User.findOne({
+        const user = await User.findOne({
             include: [{
                 model: Person,
                 where: {
-                    numeroDocumento: req.body.cedula
+                    documentNumber: req.body.documentNumber
                 }
             }]
         });
 
-        if (!usuario) {
+        if (!user) {
             return res.status(404).json({
                 success: false,
                 message: "No se encontró el usuario asociado con ese número de documento"
@@ -21,7 +21,7 @@ exports.createVehicle = async (req, res) => {
 
         const existingVehicle = await Vehicle.findOne({
             where: {
-                placa: req.body.placa.toUpperCase()
+                licensePlate: req.body.licensePlate.toUpperCase()
             }
         });
 
@@ -34,7 +34,7 @@ exports.createVehicle = async (req, res) => {
 
         const vehicleData = {
             ...req.body,
-            idUsuario: usuario.id,
+            userId: user.id
         };
 
         for (const key in vehicleData) {
@@ -68,8 +68,8 @@ exports.getAllVehicles = async (req, res) => {
 
         const whereClause = search ? {
             [Op.or]: [
-                { placa: { [Op.like]: `%${search}%` } },
-                { marca: { [Op.like]: `%${search}%` } },
+                { licensePlate: { [Op.like]: `%${search}%` } },
+                { brand: { [Op.like]: `%${search}%` } },
                 ...((!isNaN(search) ? [{ modelo: parseInt(search) }] : []))
             ]
         } : {};
@@ -110,7 +110,7 @@ exports.getVehicleById = async (req, res) => {
                 model: User,
                 include: [{
                     model: Person,
-                    attributes: ['numeroDocumento']
+                    attributes: ['documentNumber']
                 }]
             }]
         });
@@ -126,7 +126,7 @@ exports.getVehicleById = async (req, res) => {
             success: true,
             data: {
                 ...vehicle.toJSON(),
-                cedula: vehicle.User.Person.numeroDocumento
+                documentNumber: vehicle.User.Person.documentNumber
             }
         });
     } catch (error) {
@@ -149,16 +149,16 @@ exports.updateVehicle = async (req, res) => {
             });
         }
 
-        const usuario = await User.findOne({
+        const user = await User.findOne({
             include: [{
                 model: Person,
                 where: {
-                    numeroDocumento: req.body.cedula
+                    documentNumber: req.body.documentNumber
                 }
             }]
         });
 
-        if (!usuario) {
+        if (!user) {
             return res.status(404).json({
                 success: false,
                 message: "No se encontró el usuario asociado con ese número de documento"
@@ -167,7 +167,7 @@ exports.updateVehicle = async (req, res) => {
 
         const existingVehicle = await Vehicle.findOne({
             where: {
-                placa: req.body.placa.toUpperCase(),
+                licensePlate: req.body.licensePlate.toUpperCase(),
                 id: { [Op.ne]: vehicle.id }
             }
         });
@@ -181,7 +181,7 @@ exports.updateVehicle = async (req, res) => {
 
         const vehicleData = {
             ...req.body,
-            idUsuario: vehicle.idUsuario,
+            userId: vehicle.userId
         };
 
         for (const key in vehicleData) {
@@ -234,32 +234,32 @@ exports.deleteVehicle = async (req, res) => {
 
 exports.getVehicleOptions = async (req, res) => {
     try {
-        const [usuarios, estados, servicios, combustibles, tarjetas] = await Promise.all([
+        const [users, status, services, fuels, cards] = await Promise.all([
             User.findAll({
                 attributes: ['id'],
             }),
             Status.findAll({
-                attributes: ['id', 'nombre']
+                attributes: ['id', 'name']
             }),
             Service.findAll({
-                attributes: ['id', 'nombre'] 
+                attributes: ['id', 'name'] 
             }),
             Fuel.findAll({
-                attributes: ['id', 'nombre']
+                attributes: ['id', 'name']
             }),
             Card.findAll({
-                attributes: ['id', 'numero']
+                attributes: ['id', 'number']
             })
         ]);
 
         res.status(200).json({
             success: true,
             data: {
-                usuarios,
-                estados,
-                servicios,
-                combustibles,
-                tarjetas
+                users,
+                status,
+                services,
+                fuels,
+                cards
             },
             message: "Relaciones obtenidas exitosamente"
         });
@@ -279,23 +279,23 @@ exports.getVehicleWithRelations = async (req, res) => {
             include: [
                 {
                     model: User,
-                    attributes: ['id', 'nombre', 'apellido']
+                    attributes: ['id', 'firstName', 'lastName']
                 },
                 {
                     model: Status,
-                    attributes: ['id', 'nombre']
+                    attributes: ['id', 'name']
                 },
                 {
                     model: Service,
-                    attributes: ['id', 'nombre']
+                    attributes: ['id', 'name']
                 },
                 {
                     model: Fuel,
-                    attributes: ['id', 'nombre']
+                    attributes: ['id', 'name']
                 },
                 {
                     model: Card,
-                    attributes: ['id', 'numero']
+                    attributes: ['id', 'number']
                 }
             ]
         });
