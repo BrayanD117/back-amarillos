@@ -12,6 +12,7 @@ const licenseCategoriesRoutes = require('./licenseCategory');
 const usuarioRoutes = require('./user');
 const authRoutes = require('./auth');
 const cardRoutes = require('./card');
+const agreementRoutes = require('./agreement');
 
 router.use('/roles', rolesRoutes);
 router.use('/status', statusRoutes);
@@ -24,6 +25,7 @@ router.use('/license-categories', licenseCategoriesRoutes);
 router.use('/users', usuarioRoutes);
 router.use('/auth', authRoutes);
 router.use('/cards', cardRoutes);
+router.use('/agreements', agreementRoutes);
 
 router.get('/test', (req, res) => {
     res.json({ message: 'API funcionando correctamente 🚀' });
