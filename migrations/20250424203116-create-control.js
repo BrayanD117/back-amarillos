@@ -31,19 +31,19 @@ module.exports = {
       },
       news: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: true
       },
       accident: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: true
       },
       validation: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: true
       },
       control: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: true
       },
       createdAt: {
         allowNull: false,

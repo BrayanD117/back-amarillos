@@ -25,19 +25,19 @@ module.exports = (sequelize, DataTypes) => {
     },
     news: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: true
     },
     accident: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: true
     },
     validation: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: true
     },
     control: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: true
     }
   }, {
     sequelize,
