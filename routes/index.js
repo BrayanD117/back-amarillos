@@ -13,6 +13,7 @@ const usuarioRoutes = require('./user');
 const authRoutes = require('./auth');
 const cardRoutes = require('./card');
 const agreementRoutes = require('./agreement');
+const companyRoutes = require('./company');
 
 router.use('/roles', rolesRoutes);
 router.use('/status', statusRoutes);
@@ -26,6 +27,7 @@ router.use('/users', usuarioRoutes);
 router.use('/auth', authRoutes);
 router.use('/cards', cardRoutes);
 router.use('/agreements', agreementRoutes);
+router.use('/companies', companyRoutes);
 
 router.get('/test', (req, res) => {
     res.json({ message: 'API funcionando correctamente 🚀' });
