@@ -1,4 +1,4 @@
-const { Card, Vehicle, User, Fare, Person } = require('../models');
+const { Card, Vehicle, User, Fare, Person, Status, Service, Fuel, TransportSecretary, Requirement, Agreement } = require('../models');
 const { Op, fn, col, where } = require('sequelize');
 
 exports.createCard = async (req, res) => {
@@ -252,3 +252,164 @@ exports.getCardOptions = async (req, res) => {
     });
   }
 };
+
+exports.generateCard = async (req, res) => {
+  try {
+    const { vehicleId } = req.params;
+    
+    if (!vehicleId) {
+      return res.status(400).json({
+        ok: false,
+        message: "Se requiere el ID del vehículo"
+      });
+    }
+
+    const vehicle = await Vehicle.findByPk(vehicleId, {
+      include: [
+        {
+          model: User,
+          include: [
+            {
+              model: Person,
+              attributes: ['id', 'documentNumber', 'documentTypeId', 'firstName', 'lastName', 'bloodTypeId', 'address', 'phone', 'email']
+            }
+          ]
+        },
+        {
+          model: Status,
+          attributes: ['id', 'name']
+        },
+        {
+          model: Service,
+          attributes: ['id', 'name']
+        },
+        {
+          model: Fuel,
+          attributes: ['id', 'name']
+        },
+        {
+          model: TransportSecretary,
+          attributes: ['id', 'name']
+        },
+        {
+          model: Requirement,
+          attributes: ['id', 'name', 'description', 'expirationDate']
+        }
+      ]
+    });
+
+    if (!vehicle) {
+      return res.status(404).json({
+        ok: false,
+        message: "Vehículo no encontrado"
+      });
+    }
+
+    const fares = await Fare.findAll();
+
+    const agreements = await Agreement.findAll({
+      where: {
+        transportSecretaryId: vehicle.transportSecretaryId
+      },
+      include: [
+        {
+          model: TransportSecretary,
+          as: 'transportSecretary',
+          attributes: ['id', 'name']
+        }
+      ]
+    });
+
+    const cardData = {
+      vehicleInfo: {
+        id: vehicle.id,
+        licensePlate: vehicle.licensePlate,
+        internalNumber: vehicle.internalNumber,
+        brand: vehicle.brand,
+        line: vehicle.line,
+        model: vehicle.model,
+        color: vehicle.color,
+        vehicleClass: vehicle.vehicleClass,
+        bodyType: vehicle.bodyType,
+        capacity: vehicle.capacity,
+        engine: vehicle.engine,
+        chassis: vehicle.chassis,
+        displacement: vehicle.displacement,
+        doors: vehicle.doors,
+        service: vehicle.Service ? vehicle.Service.name : null,
+        status: vehicle.Status ? vehicle.Status.name : null,
+        fuel: vehicle.Fuel ? vehicle.Fuel.name : null,
+        transportSecretary: vehicle.TransportSecretary ? vehicle.TransportSecretary.name : null,
+        registrationDate: vehicle.registrationDate,
+        issueDate: vehicle.issueDate
+      },
+      driverInfo: vehicle.User ? {
+        id: vehicle.User.id,
+        personInfo: vehicle.User.Person ? {
+          id: vehicle.User.Person.id,
+          documentNumber: vehicle.User.Person.documentNumber,
+          documentTypeId: vehicle.User.Person.documentTypeId,
+          firstName: vehicle.User.Person.firstName,
+          lastName: vehicle.User.Person.lastName,
+          bloodTypeId: vehicle.User.Person.bloodTypeId,
+          address: vehicle.User.Person.address,
+          phone: vehicle.User.Person.phone,
+          email: vehicle.User.Person.email,
+          fullName: `${vehicle.User.Person.firstName} ${vehicle.User.Person.lastName}`
+        } : null
+      } : null,
+      endorsementInfo: {
+        requirements: vehicle.Requirements ? vehicle.Requirements.map(req => ({
+          id: req.id,
+          name: req.name,
+          description: req.description,
+          expirationDate: req.expirationDate
+        })) : []
+      },
+      fareInfo: fares.map(fare => ({
+        id: fare.id,
+        minimum: fare.minimum,
+        value: fare.value
+      })),
+      agreementInfo: agreements.map(agreement => ({
+        id: agreement.id,
+        name: agreement.name,
+        kilometer: agreement.kilometer,
+        transportSecretary: agreement.transportSecretary ? agreement.transportSecretary.name : null
+      }))
+    };
+
+    const uniqueCardNumber = `TC-${vehicleId}-${Date.now()}`;
+
+    const currentDate = new Date();
+    const expirationDate = new Date();
+    expirationDate.setFullYear(currentDate.getFullYear() + 1);
+
+    const cardToCreate = {
+      vehicleId: vehicle.id,
+      userId: vehicle.User ? vehicle.User.id : null,
+      fareId: fares.length > 0 ? fares[0].id : null,
+      number: uniqueCardNumber,
+      issueDate: currentDate,
+      expirationDate: expirationDate,
+      endorsement: "Tarjeta generada automáticamente"
+    };
+
+    res.status(200).json({
+      ok: true,
+      message: "Datos de la tarjeta generados exitosamente",
+      data: {
+        cardData,
+        cardToCreate
+      }
+    });
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      ok: false,
+      message: "Error al generar los datos de la tarjeta",
+      error: error.message
+    });
+  }
+}
