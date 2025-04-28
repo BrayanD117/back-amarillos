@@ -34,12 +34,6 @@ module.exports = {
       legalRepresentativeId: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        references: {
-          model: 'People',
-          key: 'id'
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'SET NULL'
       },
       address: {
         type: Sequelize.STRING,
