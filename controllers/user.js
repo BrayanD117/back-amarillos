@@ -1,4 +1,4 @@
-const { User, Person, DocumentType, BloodType, LicenseCategory, Status, Role } = require('../models');
+const { User, Person, DocumentType, BloodType, LicenseCategory, Status, Role, TransportSecretary, City, Department } = require('../models');
 const bcrypt = require('bcrypt');
 const { Op, fn, col, where } = require('sequelize');
 
@@ -333,7 +333,7 @@ exports.deleteUser = async (req, res) => {
 
 exports.getUserOptions = async (req, res) => {
   try {
-    const [roles, status, documentTypes, bloodTypes, licenseCategories] = await Promise.all([
+    const [roles, status, documentTypes, bloodTypes, licenseCategories, transportSecretaries] = await Promise.all([
       Role.findAll({
         attributes: ['id', 'name'],
       }),
@@ -348,6 +348,9 @@ exports.getUserOptions = async (req, res) => {
       }),
       LicenseCategory.findAll({
         attributes: ['id', 'name']
+      }),
+      TransportSecretary.findAll({
+        attributes: ['id', 'name'],
       })
     ]);
 
@@ -358,7 +361,8 @@ exports.getUserOptions = async (req, res) => {
         status,
         documentTypes,
         bloodTypes,
-        licenseCategories
+        licenseCategories,
+        transportSecretaries,
       },
       message: "Opciones obtenidas exitosamente"
     });
