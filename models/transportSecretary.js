@@ -35,7 +35,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false
       },
-      phone: {
+      phoneNumber: {
         type: DataTypes.STRING,
         allowNull: false
       },

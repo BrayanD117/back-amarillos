@@ -4,26 +4,24 @@ const { User, Role } = require('../models');
 
 exports.login = async (req, res) => {
     try {
-        const { usuario, contrasenia } = req.body;
+        const { username, password } = req.body;
 
-        const usuarioExistente = await User.findOne({ where: { usuario }, include: Role });
-        if (!usuarioExistente) return res.status(401).json({ message: 'User no encontrado' });
+        const existingUser = await User.findOne({ where: { username }, include: Role });
+        if (!existingUser) return res.status(401).json({ message: 'Usuario no encontrado' });
 
-        const contraseniaValida = bcrypt.compareSync(contrasenia, usuarioExistente.contrasenia);
-        if (!contraseniaValida) return res.status(401).json({ message: 'Contraseña incorrecta' });
-    
-        const roleName = usuarioExistente.Role.nombre;
+        const validPassword = bcrypt.compareSync(password, existingUser.password);
+        if (!validPassword) return res.status(401).json({ message: 'Contraseña incorrecta' });
 
         const tokenPayload = {
-            id: usuarioExistente.id,
-            usuario: usuarioExistente.usuario,
-            rol: roleName,
-            idEstado: usuarioExistente.idEstado
+            id: existingUser.id,
+            username: existingUser.username,
+            role: existingUser.Role.name,
+            statusId: existingUser.statusId
         };
 
         const token = jwt.sign(tokenPayload, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-        res.cookie('tokenAcceso', token, {
+        res.cookie('accessToken', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'Strict',
@@ -31,19 +29,19 @@ exports.login = async (req, res) => {
         })
 
         return res.json({
-            id: usuarioExistente.id,
-            usuario: usuarioExistente.usuario,
-            rol: roleName,
-            idEstado: usuarioExistente.idEstado
+            id: existingUser.id,
+            username: existingUser.username,
+            role: existingUser.Role.name,
+            statusId: existingUser.statusId
         });
 
     } catch (error) {
-        console.error('Error en el login:', error);
-        return res.status(500).json({ message: 'Error en el servidor' });
+        console.error('Error al iniciar sesión:', error);
+        return res.status(500).json({ message: 'Error al iniciar sesión' });
     }
 };
 
 exports.logout = (req, res) => {
-    res.clearCookie('tokenAcceso');
-    return res.json({ message: 'Logout exitoso' });
+    res.clearCookie('accessToken');
+    return res.json({ message: 'Cierre de sesión exitoso' });
 };
