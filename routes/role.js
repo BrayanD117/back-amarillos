@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const rolesController = require('../controllers/rol');
-const { verifyToken, isAdmin } = require('../middlewares/autenticacionJwt');
+const rolesController = require('../controllers/role');
+const { verifyToken, isAdmin } = require('../middlewares/authJwt');
 
 router.post('/', verifyToken, isAdmin, rolesController.createRole);
 router.get('/', verifyToken, rolesController.getAllRoles);

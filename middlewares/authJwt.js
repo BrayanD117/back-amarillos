@@ -2,8 +2,8 @@ const jwt = require('jsonwebtoken');
 
 exports.verifyToken = (req, res, next) => {
     let token = req.headers['authorization'];
-    if (!token && req.cookies && req.cookies.tokenAcceso) {
-        token = req.cookies.tokenAcceso;
+    if (!token && req.cookies && req.cookies.accessToken) {
+        token = req.cookies.accessToken;
     }
 
     if (!token) return res.status(403).json({ message: 'No se proporcionó un token' });
@@ -15,9 +15,9 @@ exports.verifyToken = (req, res, next) => {
     jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
         if (err) return res.status(401).json({ message: 'Token no válido' });
         req.id = decoded.id;
-        req.usuario = decoded.usuario;
-        req.rol = decoded.rol;
-        req.idEstado = decoded.idEstado;
+        req.username = decoded.username;
+        req.role = decoded.role;
+        req.statusId = decoded.statusId;
         next();
     });
 };

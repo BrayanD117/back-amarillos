@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const cardController = require('../controllers/tarjeta');
-const { verifyToken, isAdmin } = require('../middlewares/autenticacionJwt');
+const cardController = require('../controllers/card');
+const { verifyToken, isAdmin } = require('../middlewares/authJwt');
 
 router.post('/', cardController.createCard);
 
