@@ -18,6 +18,7 @@ const controlRoutes = require('./control');
 const fareRoutes = require('./fare');
 const requirementRoutes = require('./requirement');
 const reviewRoutes = require('./review');
+const surchargeRoutes = require('./surcharge');
 
 router.use('/roles', rolesRoutes);
 router.use('/status', statusRoutes);
@@ -36,6 +37,7 @@ router.use('/controls', controlRoutes);
 router.use('/fares', fareRoutes);
 router.use('/requirements', requirementRoutes);
 router.use('/reviews', reviewRoutes);
+router.use('/surcharges', surchargeRoutes);
 
 router.get('/test', (req, res) => {
     res.json({ message: 'API funcionando correctamente 🚀' });

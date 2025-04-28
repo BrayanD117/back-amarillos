@@ -1,17 +1,16 @@
-const { Agreement, TransportSecretary } = require('../models');
+const { Surcharge, TransportSecretary } = require('../models');
 const { Op } = require('sequelize');
 
-exports.getAgreements = async (req, res) => {
+exports.getSurcharges = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const offset = (page - 1) * limit;
 
-    const { count, rows } = await Agreement.findAndCountAll({
+    const { count, rows } = await Surcharge.findAndCountAll({
       include: [
         {
           model: TransportSecretary,
-          as: 'transportSecretary',
           attributes: ['id', 'name']
         }
       ],
@@ -31,7 +30,7 @@ exports.getAgreements = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Error getting agreements:', error);
+    console.error('Error al obtener los recargos:', error);
     return res.status(500).json({
       success: false,
       message: 'Error al obtener los convenios',
@@ -40,32 +39,31 @@ exports.getAgreements = async (req, res) => {
   }
 };
 
-exports.getAgreementById = async (req, res) => {
+exports.getSurchargeById = async (req, res) => {
   const { id } = req.params;
   try {
-    const agreement = await Agreement.findByPk(id, {
+    const surcharge = await Surcharge.findByPk(id, {
       include: [
         {
           model: TransportSecretary,
-          as: 'transportSecretary',
           attributes: ['id', 'name']
         }
       ]
     });
 
-    if (!agreement) {
+    if (!surcharge) {
       return res.status(404).json({
         success: false,
-        message: 'Convenio no encontrado'
+        message: 'Recargo no encontrado'
       });
     }
 
     return res.status(200).json({
       success: true,
-      data: agreement
+      data: surcharge
     });
   } catch (error) {
-    console.error('Error getting agreement by ID:', error);
+    console.error('Error al obtener el convenio:', error);
     return res.status(500).json({
       success: false,
       message: 'Error al obtener el convenio',
@@ -74,11 +72,11 @@ exports.getAgreementById = async (req, res) => {
   }
 };
 
-exports.createAgreement = async (req, res) => {
+exports.createSurcharge = async (req, res) => {
   try {
-    const { transportSecretaryId, name, kilometer } = req.body;
+    const { transportSecretaryId, airport, terminal, law } = req.body;
 
-    if (!transportSecretaryId || !name || !kilometer) {
+    if (!transportSecretaryId || !airport || !terminal || !law) {
       return res.status(400).json({
         success: false,
         message: 'Todos los campos son obligatorios'
@@ -93,41 +91,41 @@ exports.createAgreement = async (req, res) => {
       });
     }
 
-    const agreement = await Agreement.create({
-      transportSecretaryId,
-      name,
-      kilometer: parseFloat(kilometer)
+    const surcharge = await Surcharge.create({
+        transportSecretaryId,
+        airport: parseFloat(airport),
+        terminal: parseFloat(terminal),
+        law
     });
 
     return res.status(201).json({
       success: true,
-      message: 'Convenio creado exitosamente',
-      data: agreement
+      message: 'Recargo creado exitosamente',
+      data: surcharge
     });
   } catch (error) {
-    console.error('Error creating agreement:', error);
+    console.error('Error al crear el recargo:', error);
     return res.status(500).json({
       success: false,
-      message: 'Error al crear el convenio',
+      message: 'Error al crear el recargo',
       error: error.message
     });
   }
 };
 
-exports.updateAgreement = async (req, res) => {
+exports.updateSurcharge = async (req, res) => {
   const { id } = req.params;
   try {
-    const { transportSecretaryId, name, kilometer } = req.body;
+    const { transportSecretaryId, airport, terminal, law } = req.body;
 
-    const agreement = await Agreement.findByPk(id);
-    if (!agreement) {
+    const surcharge = await Surcharge.findByPk(id);
+    if (!surcharge) {
       return res.status(404).json({
         success: false,
-        message: 'Convenio no encontrado'
+        message: 'Recargo no encontrado'
       });
     }
 
-    // If transportSecretaryId is provided, check if it exists
     if (transportSecretaryId) {
       const transportSecretary = await TransportSecretary.findByPk(transportSecretaryId);
       if (!transportSecretary) {
@@ -138,51 +136,50 @@ exports.updateAgreement = async (req, res) => {
       }
     }
 
-    // Update the agreement
-    await agreement.update({
-      transportSecretaryId: transportSecretaryId || agreement.transportSecretaryId,
-      name: name || agreement.name,
-      kilometer: kilometer ? parseFloat(kilometer) : agreement.kilometer
+    await surcharge.update({
+        transportSecretaryId: transportSecretaryId || surcharge.transportSecretaryId,
+        airport: airport ? parseFloat(airport) : surcharge.airport,
+        terminal: terminal ? parseFloat(terminal) : surcharge.terminal,
+        law: law || surcharge.law
     });
 
     return res.status(200).json({
       success: true,
-      message: 'Convenio actualizado exitosamente',
-      data: agreement
+      message: 'Recargo actualizado exitosamente',
+      data: surcharge
     });
   } catch (error) {
-    console.error('Error updating agreement:', error);
+    console.error('Error al actualizar el recargo:', error);
     return res.status(500).json({
       success: false,
-      message: 'Error al actualizar el convenio',
+      message: 'Error al actualizar el recargo',
       error: error.message
     });
   }
 };
 
-// Delete an agreement
-exports.deleteAgreement = async (req, res) => {
+exports.deleteSurcharge = async (req, res) => {
   const { id } = req.params;
   try {
-    const agreement = await Agreement.findByPk(id);
-    if (!agreement) {
+    const surcharge = await Surcharge.findByPk(id);
+    if (!surcharge) {
       return res.status(404).json({
         success: false,
-        message: 'Convenio no encontrado'
+        message: 'Recargo no encontrado'
       });
     }
 
-    await agreement.destroy();
+    await surcharge.destroy();
 
     return res.status(200).json({
       success: true,
-      message: 'Convenio eliminado exitosamente'
+      message: 'Recargo eliminado exitosamente'
     });
   } catch (error) {
-    console.error('Error deleting agreement:', error);
+    console.error('Error al eliminar el recargo:', error);
     return res.status(500).json({
       success: false,
-      message: 'Error al eliminar el convenio',
+      message: 'Error al eliminar el recargo',
       error: error.message
     });
   }
@@ -190,7 +187,6 @@ exports.deleteAgreement = async (req, res) => {
 
 exports.getOptions = async (req, res) => {
   try {
-    // Get all transport secretaries for the dropdown
     const transportSecretaries = await TransportSecretary.findAll({
       attributes: ['id', 'name'],
       order: [['name', 'ASC']]
@@ -203,7 +199,7 @@ exports.getOptions = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Error getting options:', error);
+    console.error('Error al obtener opciones:', error);
     return res.status(500).json({
       success: false,
       message: 'Error al obtener opciones',
