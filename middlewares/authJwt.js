@@ -23,14 +23,14 @@ exports.verifyToken = (req, res, next) => {
 };
 
 exports.isAdmin = (req, res, next) => {
-    if (req.rol === "Administrador") {
+    if (req.role === "Administrador") {
         return next();
     }
     res.status(403).json({ message: 'No tiene permisos para realizar esta acción' });
 }
 
 exports.isDriver = (req, res, next) => {
-    if (req.rol === "Conductor") {
+    if (req.role === "Conductor") {
         return next();
     }
     res.status(403).json({ message: 'No tiene permisos para realizar esta acción' });
