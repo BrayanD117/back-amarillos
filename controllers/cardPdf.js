@@ -151,34 +151,34 @@ exports.generateCardPdf = async (req, res) => {
       page.drawText(String(t ?? ''), { x, y, size: f, font: helv, color: rgb(0, 0, 0) });
 
     txt(cardData.vehicleInfo.licensePlate,   250, 2620);
-    txt(cardData.vehicleInfo.internalNumber, 1480, 2620);
+    txt(cardData.vehicleInfo.internalNumber, 1500, 2620);
 
     const p = cardData.driverInfo.personInfo;
     txt(`${p.firstName} ${p.lastName}`,       430, 2400);
     txt(p.documentNumber,                    1200, 2400);
     txt(p.address,                           370, 2500);
-    txt(p.healthInsurance,                   112, 600);
-    txt(p.workInsurance,                     112, 585);
-    txt(p.pension,                           112, 570);
-    txt(p.bloodTypeId ? `${p.bloodTypeId}` : '', 430, 2200);
+    txt(p.healthInsurance,                   210, 2165);
+    txt(p.workInsurance,                     710, 2165);
+    txt(p.pension,                           1350, 2165);
+    txt(p.bloodTypeId ? `${p.bloodTypeId}` : '', 500, 2280);
 
-    txt(cardData.cardInfo.number,            432, 615);
-    txt(dateCol(cardData.cardInfo.expirationDate), 432, 585);
+    txt(cardData.cardInfo.number,            550, 2050);
+    txt(dateCol(cardData.cardInfo.expirationDate), 1450, 2050);
     txt(cardData.cardInfo.endorsement,       432, 570);
 
-    const ssDate =
-      cardData.requirementInfo.requirements[0]?.soatDue;
-    txt(ssDate ? dateCol(ssDate) : '',       432, 555);
+    // const ssDate =
+    //   cardData.requirementInfo.requirements[0]?.soatDue;
+    // txt(ssDate ? dateCol(ssDate) : '',       432, 555);
 
-    txt(money(12000),                        112, 540);
-    txt(money( 8000),                        262, 540);
-    txt(money(18000),                        412, 540);
+    // txt(money(12000),                        112, 540);
+    // txt(money( 8000),                        262, 540);
+    // txt(money(18000),                        412, 540);
 
     const fare = cardData.fareInfo[0];
-    txt(money(fare.minimum),                 112, 505);
-    txt(money(fare.flagDown),                262, 505);
-    txt(money(fare.drop70m),                 412, 505);
-    txt(money(fare.drop35s),                 562, 505);
+    txt(money(fare.minimum),                 140, 810);
+    txt(money(fare.flagDown),                800, 810);
+    txt(money(fare.drop70m),                 1450, 810);
+    txt(money(fare.drop35s),                 2050, 810);
 
     const selloPath = path.join(__dirname, '../assets/firma_sello.png');
     if (fs.existsSync(selloPath)) {
