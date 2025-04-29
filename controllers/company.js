@@ -265,16 +265,10 @@ exports.getOptions = async (req, res) => {
       order: [['name', 'ASC']]
     });
 
-    const legalRepresentatives = await Person.findAll({
-      attributes: ['id', 'firstName', 'lastName', 'documentNumber'],
-      order: [['lastName', 'ASC']]
-    });
-
     return res.status(200).json({
       success: true,
       data: {
-        transportSecretaries,
-        legalRepresentatives,
+        transportSecretaries
       }
     });
   } catch (error) {

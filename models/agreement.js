@@ -5,18 +5,10 @@ const {
 module.exports = (sequelize, DataTypes) => {
   class Agreement extends Model {
     static associate(models) {
-      Agreement.belongsTo(models.TransportSecretary, {
-        foreignKey: 'transportSecretaryId',
-        as: 'transportSecretary'
-      });
+      Agreement.belongsTo(models.TransportSecretary, { foreignKey: 'transportSecretaryId' });
     }
   }
   Agreement.init({
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      allowNull: false
-    },
     name: {
       type: DataTypes.STRING(100),
       allowNull: false
