@@ -21,6 +21,10 @@ module.exports = (sequelize, DataTypes) => {
       Card.belongsTo(models.Fare, {
         foreignKey: 'fareId'
       });
+
+      Card.belongsTo(models.User, {
+        foreignKey: 'personId'
+      });
     }
   }
   Card.init({
