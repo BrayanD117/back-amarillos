@@ -3,7 +3,7 @@ const router = express.Router();
 const cardController = require('../controllers/card');
 const { verifyToken, isAdmin } = require('../middlewares/authJwt');
 
-router.get('/generate/:vehicleId', verifyToken, cardController.generateCard);
+router.get('/generate/:cardId', cardController.generateCard);
 router.post('/', cardController.createCard);
 router.get('/', verifyToken, isAdmin, cardController.getAllCards);
 router.get('/options', verifyToken, isAdmin, cardController.getCardOptions);

@@ -255,26 +255,27 @@ exports.getCardOptions = async (req, res) => {
 
 exports.generateCard = async (req, res) => {
   try {
-    const { vehicleId } = req.params;
+    const { cardId } = req.params;
     
-    if (!vehicleId) {
+    if (!cardId) {
       return res.status(400).json({
         ok: false,
-        message: "Se requiere el ID del vehículo"
+        message: "Se requiere el ID de la tarjeta"
       });
     }
 
-    const vehicle = await Vehicle.findByPk(vehicleId, {
+    const card = await Card.findByPk(cardId);
+    
+    if (!card) {
+      return res.status(404).json({
+        ok: false,
+        message: "Tarjeta no encontrada"
+      });
+    }
+    
+    // Obtener el vehículo con sus relaciones
+    const vehicle = await Vehicle.findByPk(card.vehicleId, {
       include: [
-        {
-          model: User,
-          include: [
-            {
-              model: Person,
-              attributes: ['id', 'documentNumber', 'documentTypeId', 'firstName', 'lastName', 'bloodTypeId', 'address', 'phone', 'email']
-            }
-          ]
-        },
         {
           model: Status,
           attributes: ['id', 'name']
@@ -284,16 +285,18 @@ exports.generateCard = async (req, res) => {
           attributes: ['id', 'name']
         },
         {
-          model: Fuel,
-          attributes: ['id', 'name']
-        },
-        {
           model: TransportSecretary,
           attributes: ['id', 'name']
         },
         {
           model: Requirement,
-          attributes: ['id', 'name', 'description', 'expirationDate']
+          attributes: ['id', 'soat', 'soatCompany', 'soatIssue', 'soatDue',
+            'vehicleInspection', 'vehicleInspectionCompany', 
+            'vehicleInspectionIssue', 'vehicleInspectionDue',
+            'thirdParty', 'thirdPartyCompany', 'thirdPartyIssue', 'thirdPartyDue']
+        },
+        {
+          model: Person,
         }
       ]
     });
@@ -305,8 +308,39 @@ exports.generateCard = async (req, res) => {
       });
     }
 
+    // Obtener la persona asociada a la tarjeta
+    const person = await Person.findByPk(card.personId);
+
+    if (!person) {
+      return res.status(404).json({
+        ok: false,
+        message: "Persona no encontrada"
+      });
+    }
+    
+    // Obtener el usuario asociado a la persona
+    const user = await User.findByPk(person.userId, {
+      include: [
+        {
+          model: Person,
+          attributes: ['id', 'documentNumber', 'firstName', 'lastName', 'bloodTypeId', 
+            'address', 'phoneNumber', 'healthInsurance', 'workInsurance', 'pension', 
+            'licenseNumber', 'documentTypeId']
+        }
+      ]
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        ok: false,
+        message: "Usuario no encontrado"
+      });
+    }
+
+    // Obtener las tarifas
     const fares = await Fare.findAll();
 
+    // Obtener los acuerdos
     const agreements = await Agreement.findAll({
       where: {
         transportSecretaryId: vehicle.transportSecretaryId
@@ -334,73 +368,79 @@ exports.generateCard = async (req, res) => {
         capacity: vehicle.capacity,
         engine: vehicle.engine,
         chassis: vehicle.chassis,
-        displacement: vehicle.displacement,
         doors: vehicle.doors,
         service: vehicle.Service ? vehicle.Service.name : null,
         status: vehicle.Status ? vehicle.Status.name : null,
         fuel: vehicle.Fuel ? vehicle.Fuel.name : null,
         transportSecretary: vehicle.TransportSecretary ? vehicle.TransportSecretary.name : null,
         registrationDate: vehicle.registrationDate,
-        issueDate: vehicle.issueDate
+        issueDate: vehicle.issueDate,
+        owner: vehicle.User && vehicle.User.Person ? 
+          `${vehicle.User.Person.firstName} ${vehicle.User.Person.lastName}` : null
       },
-      driverInfo: vehicle.User ? {
-        id: vehicle.User.id,
-        personInfo: vehicle.User.Person ? {
-          id: vehicle.User.Person.id,
-          documentNumber: vehicle.User.Person.documentNumber,
-          documentTypeId: vehicle.User.Person.documentTypeId,
-          firstName: vehicle.User.Person.firstName,
-          lastName: vehicle.User.Person.lastName,
-          bloodTypeId: vehicle.User.Person.bloodTypeId,
-          address: vehicle.User.Person.address,
-          phone: vehicle.User.Person.phone,
-          email: vehicle.User.Person.email,
-          fullName: `${vehicle.User.Person.firstName} ${vehicle.User.Person.lastName}`
+      driverInfo: {
+        id: user.id,
+        personInfo: person ? {
+          id: person.id,
+          documentNumber: person.documentNumber,
+          documentTypeId: person.documentTypeId,
+          firstName: person.firstName,
+          lastName: person.lastName,
+          bloodTypeId: person.bloodTypeId,
+          address: person.address,
+          phoneNumber: person.phoneNumber,
+          healthInsurance: person.healthInsurance,
+          workInsurance: person.workInsurance,
+          pension: person.pension,
+          licenseNumber: person.licenseNumber,
+          fullName: `${person.firstName} ${person.lastName}`
         } : null
-      } : null,
-      endorsementInfo: {
-        requirements: vehicle.Requirements ? vehicle.Requirements.map(req => ({
-          id: req.id,
-          name: req.name,
-          description: req.description,
-          expirationDate: req.expirationDate
-        })) : []
+      },
+      requirementInfo: {
+        requirements: vehicle.Requirements && vehicle.Requirements.length > 0 ? 
+          vehicle.Requirements.map(req => ({
+            soat: req.soat,
+            soatCompany: req.soatCompany,
+            soatIssue: req.soatIssue,
+            soatDue: req.soatDue,
+            vehicleInspection: req.vehicleInspection,
+            vehicleInspectionCompany: req.vehicleInspectionCompany,
+            vehicleInspectionIssue: req.vehicleInspectionIssue,
+            vehicleInspectionDue: req.vehicleInspectionDue,
+            thirdParty: req.thirdParty,
+            thirdPartyCompany: req.thirdPartyCompany,
+            thirdPartyIssue: req.thirdPartyIssue,
+            thirdPartyDue: req.thirdPartyDue
+          })) : []
       },
       fareInfo: fares.map(fare => ({
         id: fare.id,
         minimum: fare.minimum,
-        value: fare.value
+        flagDown: fare.flagDown,
+        drop70m: fare.drop70m,
+        drop35s: fare.drop35s,
+        hour: fare.hour
       })),
       agreementInfo: agreements.map(agreement => ({
         id: agreement.id,
         name: agreement.name,
         kilometer: agreement.kilometer,
         transportSecretary: agreement.transportSecretary ? agreement.transportSecretary.name : null
-      }))
-    };
-
-    const uniqueCardNumber = `TC-${vehicleId}-${Date.now()}`;
-
-    const currentDate = new Date();
-    const expirationDate = new Date();
-    expirationDate.setFullYear(currentDate.getFullYear() + 1);
-
-    const cardToCreate = {
-      vehicleId: vehicle.id,
-      personId: vehicle.User ? vehicle.User.id : null,
-      fareId: fares.length > 0 ? fares[0].id : null,
-      number: uniqueCardNumber,
-      issueDate: currentDate,
-      expirationDate: expirationDate,
-      endorsement: "Tarjeta generada automáticamente"
+      })),
+      cardInfo: {
+        id: card.id,
+        number: card.number,
+        issueDate: card.issueDate,
+        expirationDate: card.expirationDate,
+        endorsement: card.endorsement
+      }
     };
 
     res.status(200).json({
       ok: true,
       message: "Datos de la tarjeta generados exitosamente",
       data: {
-        cardData,
-        cardToCreate
+        cardData
       }
     });
 
