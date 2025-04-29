@@ -148,7 +148,7 @@ exports.updateCard = async (req, res) => {
 
   const {
     vehicleId,
-    userId,
+    personId,
     fareId,
     number,
     issueDate,
@@ -168,7 +168,7 @@ exports.updateCard = async (req, res) => {
 
     const updatedCard = await card.update({
       vehicleId,
-      userId,
+      personId,
       fareId,
       number,
       issueDate,
@@ -387,7 +387,7 @@ exports.generateCard = async (req, res) => {
 
     const cardToCreate = {
       vehicleId: vehicle.id,
-      userId: vehicle.User ? vehicle.User.id : null,
+      personId: vehicle.User ? vehicle.User.id : null,
       fareId: fares.length > 0 ? fares[0].id : null,
       number: uniqueCardNumber,
       issueDate: currentDate,
