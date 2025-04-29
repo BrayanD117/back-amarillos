@@ -14,12 +14,16 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'vehicleId'
       });
 
-      Card.belongsTo(models.User, {
-        foreignKey: 'userId'
+      Card.belongsTo(models.Person, {
+        foreignKey: 'personId'
       });
       
       Card.belongsTo(models.Fare, {
         foreignKey: 'fareId'
+      });
+
+      Card.belongsTo(models.User, {
+        foreignKey: 'personId'
       });
     }
   }
@@ -28,7 +32,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    userId: {
+    personId: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
