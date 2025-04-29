@@ -15,12 +15,17 @@ module.exports = (sequelize, DataTypes) => {
       Vehicle.belongsTo(models.Service, { foreignKey: 'serviceId' });
       Vehicle.belongsTo(models.Fuel, { foreignKey: 'fuelId' });
       Vehicle.belongsTo(models.TransportSecretary, { foreignKey: 'transportSecretaryId' });
+      Vehicle.belongsTo(models.Company, { foreignKey: 'companyId' });
 
       Vehicle.hasMany(models.Control, { foreignKey: 'vehicleId' });
       Vehicle.hasMany(models.Requirement, { foreignKey: 'vehicleId' });
     }
   }
   Vehicle.init({
+    companyId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
     personId: {
       type: DataTypes.INTEGER,
       allowNull: false
@@ -67,6 +72,10 @@ module.exports = (sequelize, DataTypes) => {
     },
     bodyType: {
       type: DataTypes.STRING,
+      allowNull: false
+    },
+    fuelId: {
+      type: DataTypes.INTEGER,
       allowNull: false
     },
     capacity: {
