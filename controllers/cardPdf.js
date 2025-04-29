@@ -42,7 +42,7 @@ async function buildCardData (cardId) {
     const fares = await Fare.findAll();
     const agreements = await Agreement.findAll({
       where: { transportSecretaryId: vehicle.transportSecretaryId },
-      include: [{ model: TransportSecretary, as: 'transportSecretary' }]
+      include: [{ model: TransportSecretary }]
     });
   
     /* ---- devuelve el mismo objeto que ya generabas ---- */
