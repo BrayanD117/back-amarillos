@@ -7,11 +7,10 @@ exports.getAgreements = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const offset = (page - 1) * limit;
 
-    const { count, rows } = await Agreement.findAndCountAll({
+    const { count, rows: agreements } = await Agreement.findAndCountAll({
       include: [
         {
           model: TransportSecretary,
-          as: 'transportSecretary',
           attributes: ['id', 'name']
         }
       ],
@@ -22,12 +21,14 @@ exports.getAgreements = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      data: rows,
-      meta: {
-        total: count,
-        page,
-        limit,
-        totalPages: Math.ceil(count / limit)
+      data: {
+        agreements,
+        pagination: {
+          total: count,
+          page,
+          limit,
+          totalPages: Math.ceil(count / limit)
+        }
       }
     });
   } catch (error) {
@@ -47,7 +48,6 @@ exports.getAgreementById = async (req, res) => {
       include: [
         {
           model: TransportSecretary,
-          as: 'transportSecretary',
           attributes: ['id', 'name']
         }
       ]
