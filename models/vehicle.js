@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      Vehicle.belongsTo(models.User, { foreignKey: 'userId' });
+      Vehicle.belongsTo(models.Person, { foreignKey: 'personId' });
       Vehicle.belongsTo(models.Status, { foreignKey: 'statusId' });
       Vehicle.belongsTo(models.Service, { foreignKey: 'serviceId' });
       Vehicle.belongsTo(models.Fuel, { foreignKey: 'fuelId' });
@@ -21,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Vehicle.init({
-    userId: {
+    personId: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
@@ -49,7 +49,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    displacement: {
+    cylinderCapacity: {
       type: DataTypes.INTEGER,
       allowNull: false
     },

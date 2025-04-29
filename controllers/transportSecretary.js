@@ -1,4 +1,4 @@
-const { TransportSecretary, City } = require('../models');
+const { TransportSecretary, City, Status } = require('../models');
 const { Op } = require('sequelize');
 
 exports.getTransportSecretaries = async (req, res) => {
@@ -6,14 +6,27 @@ exports.getTransportSecretaries = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const offset = (page - 1) * limit;
+    const search = String(req.query.search || '').trim().toUpperCase();
 
-    const { count, rows } = await TransportSecretary.findAndCountAll({
+    const whereClause = search ? {
+      [Op.or]: [
+          { name: { [Op.like]: `%${search}%` } },
+          { address: { [Op.like]: `%${search}%` } }
+      ]
+  } : {};
+
+    const { count, rows: transportSecretaries } = await TransportSecretary.findAndCountAll({
       include: [
         {
           model: City,
           attributes: ['id', 'name']
+        },
+        {
+          model: Status,
+          attributes: ['id', 'name']
         }
       ],
+      where: whereClause,
       limit,
       offset,
       order: [['id', 'ASC']]
@@ -21,12 +34,14 @@ exports.getTransportSecretaries = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      data: rows,
-      meta: {
-        total: count,
-        page,
-        limit,
-        totalPages: Math.ceil(count / limit)
+      data: {
+        transportSecretaries,
+        pagination: {
+          total: count,
+          page,
+          limit,
+          totalPages: Math.ceil(count / limit)
+        }
       }
     });
   } catch (error) {
