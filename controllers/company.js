@@ -7,7 +7,7 @@ exports.getCompanies = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const offset = (page - 1) * limit;
 
-    const { count, rows } = await Company.findAndCountAll({
+    const { count, rows: companies } = await Company.findAndCountAll({
       include: [
         {
           model: TransportSecretary,
@@ -15,7 +15,6 @@ exports.getCompanies = async (req, res) => {
         },
         {
           model: Person,
-          as: 'Person',
           attributes: ['id', 'firstName', 'lastName']
         }
       ],
@@ -26,16 +25,18 @@ exports.getCompanies = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      data: rows,
-      meta: {
-        total: count,
-        page,
-        limit,
-        totalPages: Math.ceil(count / limit)
+      data: {
+        companies,
+        pagination: {
+          total: count,
+          page,
+          totalPages: Math.ceil(count / limit),
+          limit
+        }
       }
     });
   } catch (error) {
-    console.error('Error getting companies:', error);
+    console.error('Error al obtener las empresas:', error);
     return res.status(500).json({
       success: false,
       message: 'Error al obtener las empresas',
@@ -55,8 +56,7 @@ exports.getCompanyById = async (req, res) => {
         },
         {
           model: Person,
-          as: 'Person',
-          attributes: ['id', 'firstName', 'lastName']
+          attributes: ['id', 'documentNumber']
         }
       ]
     });
@@ -89,14 +89,14 @@ exports.createCompany = async (req, res) => {
       companyType, 
       name, 
       nit, 
-      legalRepresentativeId, 
+      docNumLegalRepresentative, 
       address, 
       phoneNumber, 
       email 
     } = req.body;
 
     if (!transportSecretaryId || !companyType || !name || !nit || 
-        !legalRepresentativeId || !address || !phoneNumber || !email) {
+        !address || !phoneNumber || !email) {
       return res.status(400).json({
         success: false,
         message: 'Todos los campos son obligatorios'
@@ -111,11 +111,15 @@ exports.createCompany = async (req, res) => {
       });
     }
 
-    const legalRepresentative = await Person.findByPk(legalRepresentativeId);
-    if (!legalRepresentative) {
+    const person = await Person.findOne({
+      where: {
+        documentNumber: docNumLegalRepresentative
+      }
+    });
+    if (!person) {
       return res.status(404).json({
         success: false,
-        message: 'El representante legal no existe'
+        message: 'La Persona no existe'
       });
     }
 
@@ -132,7 +136,7 @@ exports.createCompany = async (req, res) => {
       companyType,
       name,
       nit,
-      legalRepresentativeId,
+      legalRepresentativeId: person.id,
       address,
       phoneNumber,
       email
