@@ -1,18 +1,15 @@
-const { Vehicle, Person, User, Status, Service, Fuel, Card } = require('../models');
+const { Vehicle, Person, User, Status, Service, Fuel, TransportSecretary, Company } = require('../models');
 const { Op } = require('sequelize');
 
 exports.createVehicle = async (req, res) => {
     try {
-        const user = await User.findOne({
-            include: [{
-                model: Person,
-                where: {
-                    documentNumber: req.body.documentNumber
-                }
-            }]
+        const person = await Person.findOne({
+            where: {
+                documentNumber: req.body.documentNumber
+            }
         });
 
-        if (!user) {
+        if (!person) {
             return res.status(404).json({
                 success: false,
                 message: "No se encontró el usuario asociado con ese número de documento"
@@ -34,7 +31,7 @@ exports.createVehicle = async (req, res) => {
 
         const vehicleData = {
             ...req.body,
-            userId: user.id
+            personId: person.id
         };
 
         for (const key in vehicleData) {
@@ -95,6 +92,7 @@ exports.getAllVehicles = async (req, res) => {
             }
         });
     } catch (error) {
+        console.error('Error al obtener las Secretarías de Transporte:', error);
         res.status(500).json({
             success: false,
             message: "Error al obtener los vehículos",
@@ -107,11 +105,8 @@ exports.getVehicleById = async (req, res) => {
     try {
         const vehicle = await Vehicle.findByPk(req.params.id, {
             include: [{
-                model: User,
-                include: [{
-                    model: Person,
-                    attributes: ['documentNumber']
-                }]
+                model: Person,
+                attributes: ['documentNumber']
             }]
         });
 
@@ -122,11 +117,18 @@ exports.getVehicleById = async (req, res) => {
             });
         }
 
+        const vehiclePlain = vehicle.toJSON();
+
+        const formatDate = (date) => date ? date.toISOString().split('T')[0] : '';
+
         res.status(200).json({
             success: true,
             data: {
-                ...vehicle.toJSON(),
-                documentNumber: vehicle.User.Person.documentNumber
+                ...vehiclePlain,
+                documentNumber: vehiclePlain.Person?.documentNumber || '',
+                importDate: formatDate(vehiclePlain.importDate),
+                registrationDate: formatDate(vehiclePlain.registrationDate),
+                issueDate: formatDate(vehiclePlain.issueDate),
             }
         });
     } catch (error) {
@@ -149,16 +151,13 @@ exports.updateVehicle = async (req, res) => {
             });
         }
 
-        const user = await User.findOne({
-            include: [{
-                model: Person,
-                where: {
-                    documentNumber: req.body.documentNumber
-                }
-            }]
+        const person = await Person.findOne({
+            where: {
+                documentNumber: req.body.documentNumber
+            }
         });
 
-        if (!user) {
+        if (!person) {
             return res.status(404).json({
                 success: false,
                 message: "No se encontró el usuario asociado con ese número de documento"
@@ -181,7 +180,7 @@ exports.updateVehicle = async (req, res) => {
 
         const vehicleData = {
             ...req.body,
-            userId: vehicle.userId
+            personId: vehicle.personId
         };
 
         for (const key in vehicleData) {
@@ -234,9 +233,9 @@ exports.deleteVehicle = async (req, res) => {
 
 exports.getVehicleOptions = async (req, res) => {
     try {
-        const [users, status, services, fuels, cards] = await Promise.all([
-            User.findAll({
-                attributes: ['id'],
+        const [companies, status, services, fuels, transportSecretaries] = await Promise.all([
+            Company.findAll({
+                attributes: ['id', 'name']
             }),
             Status.findAll({
                 attributes: ['id', 'name']
@@ -247,19 +246,19 @@ exports.getVehicleOptions = async (req, res) => {
             Fuel.findAll({
                 attributes: ['id', 'name']
             }),
-            Card.findAll({
-                attributes: ['id', 'number']
+            TransportSecretary.findAll({
+                attributes: ['id', 'name']
             })
         ]);
 
         res.status(200).json({
             success: true,
             data: {
-                users,
+                companies,
                 status,
                 services,
                 fuels,
-                cards
+                transportSecretaries
             },
             message: "Relaciones obtenidas exitosamente"
         });
