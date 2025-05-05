@@ -154,9 +154,9 @@ exports.getReviewsByPerson = async (req, res) => {
 
 exports.createReview = async (req, res) => {
   try {
-    const { vehicleId, personId, rating, observation } = req.body;
+    const { vehicleId, personId, rating, comment } = req.body;
 
-    if (!vehicleId || !personId || !rating || !observation) {
+    if (!vehicleId || !personId || !rating || !comment) {
       return res.status(400).json({
         success: false,
         message: 'Todos los campos son obligatorios'
@@ -190,7 +190,7 @@ exports.createReview = async (req, res) => {
       vehicleId,
       personId,
       rating,
-      observation
+      comment
     });
 
     return res.status(201).json({
@@ -211,7 +211,7 @@ exports.createReview = async (req, res) => {
 exports.updateReview = async (req, res) => {
   const { id } = req.params;
   try {
-    const { vehicleId, personId, rating, observation } = req.body;
+    const { vehicleId, personId, rating, comment } = req.body;
 
     const review = await Review.findByPk(id);
     if (!review) {
@@ -252,7 +252,7 @@ exports.updateReview = async (req, res) => {
       vehicleId: vehicleId || review.vehicleId,
       personId: personId || review.personId,
       rating: rating !== undefined ? rating : review.rating,
-      observation: observation || review.observation
+      comment: comment || review.comment
     });
 
     return res.status(200).json({
