@@ -7,17 +7,18 @@ module.exports = (sequelize, DataTypes) => {
 
     static associate(models) {
       Review.belongsTo(models.Vehicle, {
-        foreignKey: 'VehicleId',
+        foreignKey: 'vehicleId',
       });
       
       Review.belongsTo(models.Person, {
-        foreignKey: 'PersonId',
+        foreignKey: 'personId',
       });
     }
   }
   Review.init({
     id: {
       type: DataTypes.INTEGER,
+      autoIncrement: true,
       primaryKey: true,
       allowNull: false,
     },
@@ -33,7 +34,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    observation: {
+    comment: {
       type: DataTypes.STRING(500),
       allowNull: false,
     }
