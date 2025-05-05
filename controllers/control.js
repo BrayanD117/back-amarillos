@@ -7,15 +7,15 @@ exports.getControls = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const offset = (page - 1) * limit;
 
-    const { count, rows } = await Control.findAndCountAll({
+    const { count, rows: controls } = await Control.findAndCountAll({
       include: [
         {
           model: Vehicle,
-          attributes: ['id', 'plate', 'model', 'brand']
+          attributes: ['id', 'licensePlate']
         },
         {
           model: Person,
-          attributes: ['id', 'firstName', 'lastName', 'documentNumber']
+          attributes: ['id', 'firstName', 'lastName']
         }
       ],
       limit,
@@ -25,12 +25,14 @@ exports.getControls = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      data: rows,
-      meta: {
-        total: count,
-        page,
-        limit,
-        totalPages: Math.ceil(count / limit)
+      data: {
+        controls,
+        pagination: {
+          total: count,
+          page,
+          limit,
+          totalPages: Math.ceil(count / limit)
+        }
       }
     });
   } catch (error) {
@@ -50,11 +52,11 @@ exports.getControlById = async (req, res) => {
       include: [
         {
           model: Vehicle,
-          attributes: ['id', 'plate', 'model', 'brand']
+          attributes: ['id', 'licensePlate']
         },
         {
           model: Person,
-          attributes: ['id', 'firstName', 'lastName', 'documentNumber']
+          attributes: ['id', 'firstName', 'lastName']
         }
       ]
     });
@@ -282,12 +284,12 @@ exports.deleteControl = async (req, res) => {
 exports.getOptions = async (req, res) => {
   try {
     const vehicles = await Vehicle.findAll({
-      attributes: ['id', 'plate', 'model', 'brand'],
-      order: [['plate', 'ASC']]
+      attributes: ['id', 'licensePlate'],
+      order: [['licensePlate', 'ASC']]
     });
 
-    const persons = await Person.findAll({
-      attributes: ['id', 'firstName', 'lastName', 'documentNumber'],
+    const people = await Person.findAll({
+      attributes: ['id', 'firstName', 'lastName'],
       order: [['lastName', 'ASC'], ['firstName', 'ASC']]
     });
 
@@ -295,7 +297,7 @@ exports.getOptions = async (req, res) => {
       success: true,
       data: {
         vehicles,
-        persons
+        people
       }
     });
   } catch (error) {

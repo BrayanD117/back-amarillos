@@ -1,4 +1,4 @@
-const { Requirement, Vehicle, Service, Status, Fuel, TransportSecretary, User } = require('../models');
+const { Requirement, Vehicle, Service, Status, Fuel, TransportSecretary, Person, Company } = require('../models');
 const { Op } = require('sequelize');
 
 exports.getRequirements = async (req, res) => {
@@ -7,16 +7,18 @@ exports.getRequirements = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const offset = (page - 1) * limit;
 
-    const { count, rows } = await Requirement.findAndCountAll({
+    const { count, rows: requirements } = await Requirement.findAndCountAll({
       include: [
         {
           model: Vehicle,
+          attributes: ['id', 'licensePlate'],
           include: [
-            { model: Service, attributes: ['name'] },
+            { model: Person, attributes: ['id', 'firstName', 'lastName'] },
             { model: Status, attributes: ['name'] },
+            { model: Service, attributes: ['name'] },            
             { model: Fuel, attributes: ['name'] },
             { model: TransportSecretary, attributes: ['name'] },
-            { model: User, attributes: ['id', 'username'] }
+            { model: Company, attributes: ['name'] }
           ]
         }
       ],
@@ -27,19 +29,21 @@ exports.getRequirements = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      data: rows,
-      meta: {
-        total: count,
-        page,
-        limit,
-        totalPages: Math.ceil(count / limit)
+      data: {
+        requirements,
+        pagination: {
+          total: count,
+          page,
+          limit,
+          totalPages: Math.ceil(count / limit)
+        }
       }
     });
   } catch (error) {
-    console.error('Error getting requirements:', error);
+    console.error('Error al obtener los Requerimientos:', error);
     return res.status(500).json({
       success: false,
-      message: 'Error al obtener los requisitos',
+      message: 'Error al obtener los Requerimientos',
       error: error.message
     });
   }
@@ -48,35 +52,36 @@ exports.getRequirements = async (req, res) => {
 exports.getRequirementById = async (req, res) => {
   const { id } = req.params;
   try {
-    const requirement = await Requirement.findByPk(id, {
-      include: [
-        {
-          model: Vehicle,
-          attributes: ['id', 'internalNumber', 'licensePlate', 'brand', 'line', 'model'],
-          include: [
-            { model: Service, attributes: ['name'] },
-            { model: Status, attributes: ['name'] }
-          ]
-        }
-      ]
-    });
+    const requirement = await Requirement.findByPk(id);
 
     if (!requirement) {
       return res.status(404).json({
         success: false,
-        message: 'Requisito no encontrado'
+        message: 'Requerimiento no encontrado'
       });
     }
 
+    const vehiclePlain = requirement.toJSON();
+
+    const formatDate = (date) => date ? date.toISOString().split('T')[0] : '';
+
     return res.status(200).json({
       success: true,
-      data: requirement
+      data: {
+        ...vehiclePlain,
+        soatIssue: formatDate(vehiclePlain.soatIssue),
+        soatDue: formatDate(vehiclePlain.soatDue),
+        vehicleInspectionIssue: formatDate(vehiclePlain.vehicleInspectionIssue),
+        vehicleInspectionDue: formatDate(vehiclePlain.vehicleInspectionDue),
+        thirdPartyIssue: formatDate(vehiclePlain.thirdPartyIssue),
+        thirdPartyDue: formatDate(vehiclePlain.thirdPartyDue)
+      }
     });
   } catch (error) {
-    console.error('Error getting requirement by ID:', error);
+    console.error('Error al obtener el Requerimiento:', error);
     return res.status(500).json({
       success: false,
-      message: 'Error al obtener el requisito',
+      message: 'Error al obtener el Requerimiento',
       error: error.message
     });
   }
@@ -103,7 +108,7 @@ exports.getRequirementByVehicle = async (req, res) => {
     if (!requirement) {
       return res.status(404).json({
         success: false,
-        message: 'Requisito no encontrado para este vehículo'
+        message: 'Requerimiento no encontrado para este vehículo'
       });
     }
 
@@ -115,7 +120,7 @@ exports.getRequirementByVehicle = async (req, res) => {
     console.error('Error getting requirement by vehicle:', error);
     return res.status(500).json({
       success: false,
-      message: 'Error al obtener el requisito por vehículo',
+      message: 'Error al obtener el Requerimiento por vehículo',
       error: error.message
     });
   }
@@ -160,7 +165,7 @@ exports.createRequirement = async (req, res) => {
     if (existingRequirement) {
       return res.status(400).json({
         success: false,
-        message: 'Este vehículo ya tiene requisitos registrados. Use la función de actualización.'
+        message: 'Este vehículo ya tiene Requerimientos registrados. Use la función de actualización.'
       });
     }
 
@@ -182,14 +187,14 @@ exports.createRequirement = async (req, res) => {
 
     return res.status(201).json({
       success: true,
-      message: 'Requisitos creados exitosamente',
+      message: 'Requerimientos creados exitosamente',
       data: requirement
     });
   } catch (error) {
     console.error('Error creating requirement:', error);
     return res.status(500).json({
       success: false,
-      message: 'Error al crear los requisitos',
+      message: 'Error al crear los Requerimientos',
       error: error.message
     });
   }
@@ -218,7 +223,7 @@ exports.updateRequirement = async (req, res) => {
     if (!requirement) {
       return res.status(404).json({
         success: false,
-        message: 'Requisito no encontrado'
+        message: 'Requerimiento no encontrado'
       });
     }
 
@@ -235,7 +240,7 @@ exports.updateRequirement = async (req, res) => {
       if (existingRequirement) {
         return res.status(400).json({
           success: false,
-          message: 'El nuevo vehículo ya tiene requisitos registrados'
+          message: 'El nuevo vehículo ya tiene Requerimientos registrados'
         });
       }
     }
@@ -258,14 +263,14 @@ exports.updateRequirement = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: 'Requisitos actualizados exitosamente',
+      message: 'Requerimientos actualizados exitosamente',
       data: requirement
     });
   } catch (error) {
     console.error('Error updating requirement:', error);
     return res.status(500).json({
       success: false,
-      message: 'Error al actualizar los requisitos',
+      message: 'Error al actualizar los Requerimientos',
       error: error.message
     });
   }
@@ -278,7 +283,7 @@ exports.deleteRequirement = async (req, res) => {
     if (!requirement) {
       return res.status(404).json({
         success: false,
-        message: 'Requisito no encontrado'
+        message: 'Requerimiento no encontrado'
       });
     }
 
@@ -286,13 +291,13 @@ exports.deleteRequirement = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: 'Requisito eliminado exitosamente'
+      message: 'Requerimiento eliminado exitosamente'
     });
   } catch (error) {
     console.error('Error deleting requirement:', error);
     return res.status(500).json({
       success: false,
-      message: 'Error al eliminar el requisito',
+      message: 'Error al eliminar el Requerimiento',
       error: error.message
     });
   }
@@ -331,7 +336,7 @@ exports.getVehiclesWithoutRequirements = async (req, res) => {
     console.error('Error getting vehicles without requirements:', error);
     return res.status(500).json({
       success: false,
-      message: 'Error al obtener vehículos sin requisitos',
+      message: 'Error al obtener vehículos sin Requerimientos',
       error: error.message
     });
   }
@@ -340,62 +345,13 @@ exports.getVehiclesWithoutRequirements = async (req, res) => {
 exports.getOptions = async (req, res) => {
   try {
     const vehicles = await Vehicle.findAll({
-      attributes: ['id', 'internalNumber', 'licensePlate', 'brand', 'line', 'model', 'color'],
-      include: [
-        {
-          model: Requirement,
-          attributes: ['id'],
-          required: false
-        },
-        {
-          model: Service,
-          attributes: ['name']
-        },
-        {
-          model: Status,
-          attributes: ['name', 'id']
-        }
-      ],
-      where: {
-        '$Requirements.id$': null,
-        statusId: { [Op.ne]: 3 }
-      },
+      attributes: ['id', 'licensePlate'],
       order: [['licensePlate', 'ASC']]
     });
 
-    const insuranceCompanies = [
-      'Seguros Bolivar',
-      'Seguros del Estado',
-      'Suramericana',
-      'Liberty Seguros',
-      'AXA Colpatria',
-      'MAPFRE',
-      'Allianz',
-      'La Previsora',
-      'HDI Seguros',
-      'Equidad Seguros'
-    ];
-
-    const rtmCenters = [
-      'Centro Diagnóstico Automotor',
-      'CDA Express',
-      'Revicar',
-      'Dijin',
-      'Auto Test',
-      'Autocentro Colombia',
-      'CDA Colserauto',
-      'Automas',
-      'Autotecnica Colserauto',
-      'Revitec'
-    ];
-
     return res.status(200).json({
       success: true,
-      data: {
-        vehicles,
-        insuranceCompanies,
-        rtmCenters
-      }
+      vehicles
     });
   } catch (error) {
     console.error('Error getting options:', error);
