@@ -209,10 +209,16 @@ exports.getOptions = async (req, res) => {
       order: [['name', 'ASC']]
     });
 
+    const statuses = await Status.findAll({
+      attributes: ['id', 'name'],
+      order: [['name', 'ASC']]
+    });
+
     return res.status(200).json({
       success: true,
       data: {
-        cities
+        cities,
+        statuses,
       }
     });
   } catch (error) {
