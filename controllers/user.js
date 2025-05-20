@@ -1,4 +1,4 @@
-const { User, Person, DocumentType, BloodType, LicenseCategory, Status, Role, TransportSecretary, City, Department } = require('../models');
+const { User, Person, DocumentType, BloodType, LicenseCategory, Status, Role, TransportSecretary, Company, City, Department } = require('../models');
 const bcrypt = require('bcrypt');
 const { Op, fn, col, where } = require('sequelize');
 
@@ -88,7 +88,7 @@ exports.getAllUsers = async (req, res) => {
         { model: Role, attributes: ['id', 'name'] },
         { model: Status, attributes: ['id', 'name'] },
         { model: TransportSecretary, attributes: ['id', 'name'] },
-        // { model: Company, attributes: ['id', 'name'] },
+        { model: Company, attributes: ['id', 'name'] },
         { model: DocumentType, attributes: ['id', 'name'] }
       ]
     });
