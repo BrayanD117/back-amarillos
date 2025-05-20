@@ -234,7 +234,7 @@ exports.deleteUser = async (req, res) => {
 
 exports.getUserOptions = async (req, res) => {
   try {
-    const [roles, status, documentTypes, transportSecretaries] = await Promise.all([
+    const [roles, status, documentTypes, transportSecretaries, companies] = await Promise.all([
       Role.findAll({
         attributes: ['id', 'name'],
       }),
@@ -246,6 +246,9 @@ exports.getUserOptions = async (req, res) => {
       }),
       TransportSecretary.findAll({
         attributes: ['id', 'name'],
+      }),
+      Company.findAll({
+        attributes: ['id', 'name'],
       })
     ]);
 
@@ -256,6 +259,7 @@ exports.getUserOptions = async (req, res) => {
         status,
         documentTypes,
         transportSecretaries,
+        companies
       },
       message: "Opciones obtenidas exitosamente"
     });
