@@ -171,24 +171,14 @@ exports.updateUser = async (req, res) => {
     lastName,
     secondLastName,
     firstName,
-    secondName,
+    middleName,
     documentTypeId,
     documentNumber,
-    address,
-    phoneNumber,
-    bloodTypeId,
-    rhFactor,
-    healthInsurance,
-    workInsurance,
-    pension,
-    licenseNumber,
-    licenseCategoryId,
     transportSecretaryId,
-    expirationDate,
-    photo,
     username,
     roleId,
-    statusId
+    statusId,
+    companyId
   } = req.body;
 
   try {
@@ -204,53 +194,20 @@ exports.updateUser = async (req, res) => {
     const userData = {
       ...(username && { username: username.toUpperCase() }),
       ...(roleId && { roleId }),
-      ...(statusId && { statusId })
+      ...(statusId && { statusId }),
+      ...(lastName && { lastName: lastName.toUpperCase() }),
+      ...(secondLastName && { secondLastName: secondLastName?.toUpperCase() }),
+      ...(firstName && { firstName: firstName.toUpperCase() }),
+      ...(middleName && { middleName: middleName?.toUpperCase() }),
+      ...(documentTypeId && { documentTypeId }),
+      ...(documentNumber && { documentNumber: documentNumber.toUpperCase() }),
+      ...(transportSecretaryId && { transportSecretaryId }),
+      ...(companyId && { companyId })
     };
 
     await existingUser.update(userData);
 
-    const existingPerson = await Person.findOne({ where: { userId: id } });
-
-    if (!existingPerson) {
-      return res.status(404).json({
-        ok: false,
-        msg: 'Datos de persona no encontrados'
-      });
-    }
-
-    const personData = {
-      ...(lastName && { lastName: lastName.toUpperCase() }),
-      ...(secondLastName && { secondLastName: secondLastName?.toUpperCase() }),
-      ...(firstName && { firstName: firstName.toUpperCase() }),
-      ...(secondName && { secondName: secondName?.toUpperCase() }),
-      ...(documentTypeId && { documentTypeId }),
-      ...(documentNumber && { documentNumber: documentNumber.toUpperCase() }),
-      ...(address && { address: address.toUpperCase() }),
-      ...(phoneNumber && { phoneNumber: phoneNumber.toUpperCase() }),
-      ...(bloodTypeId && { bloodTypeId }),
-      ...(rhFactor && { rhFactor: rhFactor.toUpperCase() }),
-      ...(healthInsurance && { healthInsurance: healthInsurance.toUpperCase() }),
-      ...(workInsurance && { workInsurance: workInsurance.toUpperCase() }),
-      ...(pension && { pension: pension.toUpperCase() }),
-      ...(licenseNumber && { licenseNumber: licenseNumber.toUpperCase() }),
-      ...(licenseCategoryId && { licenseCategoryId }),
-      ...(transportSecretaryId && { transportSecretaryId }),
-      ...(expirationDate && { expirationDate }),
-      ...(photo && { photo })
-    };
-
-    await existingPerson.update(personData);
-
-    const updatedUser = await User.findByPk(id, {
-      include: [{
-        model: Person,
-        include: [
-          { model: DocumentType },
-          { model: BloodType },
-          { model: LicenseCategory }
-        ]
-      }]
-    });
+    const updatedUser = await User.findByPk(id);
 
     res.json({
       ok: true,
