@@ -9,8 +9,8 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'vehicleId',
       });
       
-      Shift.belongsTo(models.Person, {
-        foreignKey: 'personId',
+      Shift.belongsTo(models.Driver, {
+        foreignKey: 'driverId',
       });
 
       Shift.belongsTo(models.Status, {
@@ -26,22 +26,19 @@ module.exports = (sequelize, DataTypes) => {
     },
     vehicleId: {
       type: DataTypes.INTEGER,
-      allowNull: false,
-      field: 'vehicleId'
+      allowNull: false
     },
-    personId: {
+    driverId: {
       type: DataTypes.INTEGER,
-      allowNull: false,
-      field: 'personId'
+      allowNull: false
     },
     statusId: {
       type: DataTypes.INTEGER,
-      allowNull: false,
-      field: 'statusId'
+      allowNull: false
     }
   }, {
     sequelize,
-    modelName: 'Shift',
+    modelName: 'Shift'
   });
   return Shift;
 };

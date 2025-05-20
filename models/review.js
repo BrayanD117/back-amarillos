@@ -10,8 +10,8 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'vehicleId',
       });
       
-      Review.belongsTo(models.Person, {
-        foreignKey: 'personId',
+      Review.belongsTo(models.Driver, {
+        foreignKey: 'driverId',
       });
     }
   }
@@ -26,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    personId: {
+    driverId: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },

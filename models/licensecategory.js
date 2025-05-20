@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      LicenseCategory.hasMany(models.Person, { foreignKey: 'licenseCategoryId' });
+      LicenseCategory.hasMany(models.Driver, { foreignKey: 'licenseCategoryId' });
     }
   }
   LicenseCategory.init({

@@ -33,7 +33,7 @@ module.exports = {
       $$ LANGUAGE plpgsql;
     `);
 
-    const tables = ['"Users"', '"Vehicles"', '"People"', '"Roles"'];
+    const tables = ['"Users"', '"Vehicles"', '"Drivers"', '"Roles"'];
     for (const table of tables) {
       await queryInterface.sequelize.query(`
         DO $$
@@ -52,7 +52,7 @@ module.exports = {
   },
 
   async down (queryInterface, Sequelize) {
-    const tables = ['"Users"', '"Vehicles"', '"People"', '"Roles"'];
+    const tables = ['"Users"', '"Vehicles"', '"Drivers"', '"Roles"'];
     for (const table of tables) {
       await queryInterface.sequelize.query(`
         DROP TRIGGER IF EXISTS audit_${table.replace(/"/g, '').toLowerCase()} ON ${table};

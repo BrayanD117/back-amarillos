@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       Control.belongsTo(models.Vehicle, { foreignKey: 'vehicleId' });
-      Control.belongsTo(models.Person, { foreignKey: 'personId' });
+      Control.belongsTo(models.Driver, { foreignKey: 'driverId' });
     }
   }
   Control.init({
@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    personId: {
+    driverId: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
