@@ -1,4 +1,4 @@
-const { User, Person, DocumentType, BloodType, LicenseCategory, Status, Role, TransportSecretary, Company, City, Department } = require('../models');
+const { User, DocumentType, Status, Role, TransportSecretary, Company } = require('../models');
 const bcrypt = require('bcrypt');
 const { Op, fn, col, where } = require('sequelize');
 
@@ -115,23 +115,13 @@ exports.getUserById = async (req, res) => {
 
   try {
     const user = await User.findByPk(id, {
-      include: [{
-        model: Person,
-        include: [
-          {
-            model: DocumentType,
-            attributes: ['name']
-          },
-          {
-            model: BloodType,
-            attributes: ['name']
-          },
-          {
-            model: LicenseCategory,
-            attributes: ['name']
-          }
-        ]
-      }]
+      include: [
+        { model: Role, attributes: ['id', 'name'] },
+        { model: Status, attributes: ['id', 'name'] },
+        { model: TransportSecretary, attributes: ['id', 'name'] },
+        { model: Company, attributes: ['id', 'name'] },
+        { model: DocumentType, attributes: ['id', 'name'] }
+      ]
     });
 
     if (!user) {
@@ -244,7 +234,7 @@ exports.deleteUser = async (req, res) => {
 
 exports.getUserOptions = async (req, res) => {
   try {
-    const [roles, status, documentTypes, bloodTypes, licenseCategories, transportSecretaries] = await Promise.all([
+    const [roles, status, documentTypes, transportSecretaries] = await Promise.all([
       Role.findAll({
         attributes: ['id', 'name'],
       }),
@@ -252,12 +242,6 @@ exports.getUserOptions = async (req, res) => {
         attributes: ['id', 'name']
       }),
       DocumentType.findAll({
-        attributes: ['id', 'name']
-      }),
-      BloodType.findAll({
-        attributes: ['id', 'name']
-      }),
-      LicenseCategory.findAll({
         attributes: ['id', 'name']
       }),
       TransportSecretary.findAll({
@@ -271,8 +255,6 @@ exports.getUserOptions = async (req, res) => {
         roles,
         status,
         documentTypes,
-        bloodTypes,
-        licenseCategories,
         transportSecretaries,
       },
       message: "Opciones obtenidas exitosamente"
