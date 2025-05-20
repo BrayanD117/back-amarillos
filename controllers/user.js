@@ -5,83 +5,47 @@ const { Op, fn, col, where } = require('sequelize');
 exports.createUser = async (req, res) => {
   try {
     const {
+      transportSecretaryId,
       lastName,
       secondLastName,
       firstName,
-      secondName,
+      middleName,
       documentTypeId,
       documentNumber,
-      address,
-      phoneNumber,
-      bloodTypeId,
-      rhFactor,
-      healthInsurance,
-      workInsurance,
-      pension,
-      licenseNumber,
-      licenseCategoryId,
-      transportSecretaryId,
-      expirationDate,
-      photo,
-
       username,
       password,
       roleId,
-      statusId
+      statusId,
+      companyId
     } = req.body;
 
     const salt = bcrypt.genSaltSync();
     const passwordHash = bcrypt.hashSync(password, salt);
 
     let newUser;
-    let person;
 
     try {
       newUser = await User.create({
         username,
         password: passwordHash,
         roleId,
-        statusId
+        statusId,
+        lastName: lastName.toUpperCase(),
+        secondLastName: secondLastName?.toUpperCase(),
+        firstName: firstName.toUpperCase(),
+        middleName: middleName?.toUpperCase(),
+        documentTypeId,
+        documentNumber: documentNumber.toUpperCase(),
+        companyId,
+        transportSecretaryId
       });
-
-      try {
-        person = await Person.create({
-          lastName: lastName.toUpperCase(),
-          secondLastName: secondLastName?.toUpperCase(),
-          firstName: firstName.toUpperCase(),
-          secondName: secondName?.toUpperCase(),
-          documentTypeId,
-          documentNumber: documentNumber.toUpperCase(),
-          address: address.toUpperCase(),
-          phoneNumber: phoneNumber.toUpperCase(),
-          bloodTypeId,
-          rhFactor: rhFactor.toUpperCase(),
-          healthInsurance: healthInsurance.toUpperCase(),
-          workInsurance: workInsurance.toUpperCase(),
-          pension: pension.toUpperCase(),
-          licenseNumber: licenseNumber.toUpperCase(),
-          licenseCategoryId,
-          transportSecretaryId,
-          expirationDate,
-          photo,
-          userId: newUser.id
-        });
-
-      } catch (error) {
-        await User.destroy({ where: { id: newUser.id } });
-        throw error;
-      }
-
     } catch (error) {
       throw error;
     }
 
     res.status(201).json({
       ok: true,
-      user: {
-        ...newUser.dataValues,
-        person: person.dataValues
-      }
+      user: newUser
     });
 
   } catch (error) {

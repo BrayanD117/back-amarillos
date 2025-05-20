@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       User.belongsTo(models.Status, { foreignKey: 'statusId' });
       User.belongsTo(models.Role, { foreignKey: 'roleId' });
-
+      User.hasOne(models.DocumentType, { foreignKey: 'documentTypeId' });
       User.hasOne(models.Driver, { foreignKey: 'driverId' });
       User.belongsTo(models.Company, { foreignKey: 'companyId' });
       User.belongsTo(models.TransportSecretary, { foreignKey: 'transportSecretaryId' });
@@ -54,6 +54,16 @@ module.exports = (sequelize, DataTypes) => {
     documentNumber: {
       type: DataTypes.STRING,
       allowNull: false
+    },
+    documentTypeId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'DocumentTypes',
+        key: 'id'
+      },
+      onUpdate: 'CASCADE',
+      onDelete: 'SET NULL'
     },
     companyId: {
       type: DataTypes.INTEGER,
