@@ -15,6 +15,7 @@ module.exports = (sequelize, DataTypes) => {
       Vehicle.belongsTo(models.Fuel, { foreignKey: 'fuelId' });
       Vehicle.belongsTo(models.TransportSecretary, { foreignKey: 'transportSecretaryId' });
       Vehicle.belongsTo(models.Company, { foreignKey: 'companyId' });
+      Vehicle.belongsTo(models.DocumentType, { foreignKey: 'ownerDocumentTypeId' });
 
       Vehicle.hasMany(models.Control, { foreignKey: 'vehicleId' });
       Vehicle.hasMany(models.Requirement, { foreignKey: 'vehicleId' });
@@ -110,6 +111,26 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     },
     qrCode: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    ownerFullName: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    ownerDocumentTypeId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    ownerDocumentNumber: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    ownerPhone: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    ownerAddress: {
       type: DataTypes.STRING,
       allowNull: false
     }

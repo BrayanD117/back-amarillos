@@ -10,6 +10,9 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
+      DocumentType.hasMany(models.Vehicle, { foreignKey: 'ownerDocumentTypeId' });
+      DocumentType.hasMany(models.User, { foreignKey: 'documentTypeId' });
+      DocumentType.hasMany(models.Company, { foreignKey: 'legalRepresentativeDocumentTypeId' });
     }
   }
   DocumentType.init({

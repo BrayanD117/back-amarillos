@@ -22,24 +22,21 @@ exports.getAllCards = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const offset = (page - 1) * limit;
-    const search = String(req.query.search || '').trim().toUpperCase();;
+    const search = String(req.query.search || '').trim().toUpperCase();
 
     const searchCondition = search
       ? {
           [Op.or]: [
-            where(fn('UPPER', col('id')), {
-              [Op.like]: `%${search}%`
-            }),
             where(fn('UPPER', col('Vehicle.licensePlate')), {
                 [Op.like]: `%${search}%`
             }),
-            where(fn('UPPER', col('User.Person.documentNumber')), {
+            where(fn('UPPER', col('Driver.User.documentNumber')), {
               [Op.like]: `%${search}%`
             }),
-            where(fn('UPPER', col('User.Person.firstName')), {
+            where(fn('UPPER', col('Driver.User.firstName')), {
               [Op.like]: `%${search}%`
             }),
-            where(fn('UPPER', col('User.Person.lastName')), {
+            where(fn('UPPER', col('Driver.User.lastName')), {
               [Op.like]: `%${search}%`
             })
           ]
@@ -52,18 +49,17 @@ exports.getAllCards = async (req, res) => {
         limit,
         include: [
             {
-                model: Vehicle,
-                attributes: ['licensePlate']
+              model: Vehicle,
+              attributes: ['licensePlate']
             },
             {
-                model: User,
-                attributes: ['id'],
-                include: [
-                  {
-                    model: Person,
-                    attributes: ['documentNumber', 'firstName', 'lastName']
-                  }
-                ]
+              model: Driver,
+              include: [
+                {
+                  model: User,
+                  attributes: ['id', 'documentNumber', 'firstName', 'lastName']
+                }
+              ]
             },
             {
               model: Fare
@@ -72,18 +68,24 @@ exports.getAllCards = async (req, res) => {
     });
 
     res.json({
-      ok: true,
-      cards,
-      total: count,
-      page,
-      totalPages: Math.ceil(count / limit)
+      success: true,
+      data: {
+        cards,
+        pagination: {
+          total: count,
+          page,
+          totalPages: Math.ceil(count / limit),
+          limit
+        }
+      }
     });
 
   } catch (error) {
     console.log(error);
     res.status(500).json({
-      ok: false,
-      msg: 'Error al obtener las tarjetas.'
+      success: false,
+      message: 'Error al obtener las tarjetas.',
+      error: error.message
     });
   }
 };
@@ -99,29 +101,29 @@ exports.getCardById = async (req, res) => {
           attributes: ['id', 'licensePlate'],
         },
         {
-            model: User,
-            attributes: ['id'],
-            include: [
-              {
-                model: Person,
-                attributes: ['documentNumber']
-              }
-            ]
+          model: Driver,
+          include: [
+            {
+              model: User,
+              attributes: ['id', 'documentNumber']
+            }
+          ]
         },
         {
           model: Fare,
           attributes: ['id', 'minimum']
-        }]
+        }
+      ]
     });
 
     if (!card) {
       return res.status(404).json({
-        ok: false,
-        msg: 'Tarjeta no encontrada'
+        success: false,
+        message: 'Tarjeta no encontrada'
       });
     }
 
-    const dto = card.toJSON(); 
+    const dto = card.toJSON();
     if (dto.emision instanceof Date) {
       dto.emision = dto.emision.toISOString().split('T')[0];
     }
@@ -129,26 +131,27 @@ exports.getCardById = async (req, res) => {
       dto.vence = dto.vence.toISOString().split('T')[0];
     }
 
-    res.json({
-      ok: true,
+    return res.status(200).json({
+      success: true,
+      message: 'Tarjeta obtenida exitosamente',
       data: dto
     });
 
   } catch (error) {
     console.log(error);
-    res.status(500).json({
-      ok: false,
-      msg: 'Error al obtener la tarjeta'
+    return res.status(500).json({
+      success: false,
+      message: 'Error al obtener la tarjeta',
+      error: error.message
     });
   }
 };
 
 exports.updateCard = async (req, res) => {
   const { id } = req.params;
-
   const {
     vehicleId,
-    personId,
+    driverId,
     fareId,
     number,
     issueDate,
@@ -161,14 +164,14 @@ exports.updateCard = async (req, res) => {
 
     if (!card) {
       return res.status(404).json({
-        ok: false,
-        msg: 'Tarjeta no encontrada'
+        success: false,
+        message: 'Tarjeta no encontrada'
       });
     }
 
-    const updatedCard = await card.update({
+    await card.update({
       vehicleId,
-      personId,
+      driverId,
       fareId,
       number,
       issueDate,
@@ -176,17 +179,16 @@ exports.updateCard = async (req, res) => {
       endorsement
     });
 
-    res.json({
-      ok: true,
-      msg: 'Tarjeta actualizada correctamente',
-      updatedCard
+    return res.status(200).json({
+      success: true,
+      message: 'Tarjeta actualizada correctamente'
     });
 
   } catch (error) {
     console.log(error);
-    res.status(500).json({
-      ok: false,
-      msg: 'Error al actualizar la tarjeta.',
+    return res.status(500).json({
+      success: false,
+      message: 'Error al actualizar la tarjeta.',
       error: error.message
     });
   }
@@ -200,53 +202,50 @@ exports.deleteCard = async (req, res) => {
 
     if (!card) {
       return res.status(404).json({
-        ok: false,
-        msg: 'Tarjeta no encontrada'
+        success: false,
+        message: 'Tarjeta no encontrada'
       });
     }
 
     await card.destroy();
 
-    res.json({
-      ok: true,
-      msg: 'Tarjeta eliminada correctamente'
+    return res.status(200).json({
+      success: true,
+      message: 'Tarjeta eliminada correctamente'
     });
 
   } catch (error) {
     console.log(error);
-    res.status(500).json({
-      ok: false,
-      msg: 'Error al eliminar la tarjeta'
+    return res.status(500).json({
+      success: false,
+      message: 'Error al eliminar la tarjeta',
+      error: error.message
     });
   }
 };
 
 exports.getCardOptions = async (req, res) => {
   try {
-    const [vehicles, people, fares] = await Promise.all([
+    const [vehicles, fares] = await Promise.all([
       Vehicle.findAll({
         attributes: ['id', 'licensePlate'],
-      }),
-      Person.findAll({
-        attributes: ['id', 'documentNumber']
       }),
       Fare.findAll({
         attributes: ['id', 'minimum']
       })
     ]);
 
-    res.status(200).json({
-      ok: true,
+    return res.status(200).json({
+      success: true,
+      message: "Opciones obtenidas exitosamente",
       data: {
         vehicles,
-        people,
         fares
-      },
-      message: "Opciones obtenidas exitosamente"
+      }
     });
   } catch (error) {
-    res.status(500).json({
-      ok: false,
+    return res.status(500).json({
+      success: false,
       message: "Error al obtener las opciones",
       error: error.message
     });
@@ -259,7 +258,7 @@ exports.generateCard = async (req, res) => {
     
     if (!cardId) {
       return res.status(400).json({
-        ok: false,
+        success: false,
         message: "Se requiere el ID de la tarjeta"
       });
     }
@@ -268,12 +267,11 @@ exports.generateCard = async (req, res) => {
     
     if (!card) {
       return res.status(404).json({
-        ok: false,
+        success: false,
         message: "Tarjeta no encontrada"
       });
     }
     
-    // Obtener el vehículo con sus relaciones
     const vehicle = await Vehicle.findByPk(card.vehicleId, {
       include: [
         {
@@ -296,30 +294,31 @@ exports.generateCard = async (req, res) => {
             'thirdParty', 'thirdPartyCompany', 'thirdPartyIssue', 'thirdPartyDue']
         },
         {
-          model: Person,
+          model: Driver,
+          include: [
+            { model: User }
+          ]
         }
       ]
     });
 
     if (!vehicle) {
       return res.status(404).json({
-        ok: false,
+        success: false,
         message: "Vehículo no encontrado"
       });
     }
 
-    // Obtener la persona asociada a la tarjeta
-    const person = await Person.findByPk(card.personId);
+    const driver = await Driver.findByPk(card.driverId);
 
-    if (!person) {
+    if (!driver) {
       return res.status(404).json({
-        ok: false,
+        success: false,
         message: "Persona no encontrada"
       });
     }
     
-    // Obtener el usuario asociado a la persona
-    const user = await User.findByPk(person.userId, {
+    const user = await User.findByPk(driver.userId, {
       include: [
         {
           model: Person,
@@ -332,15 +331,13 @@ exports.generateCard = async (req, res) => {
 
     if (!user) {
       return res.status(404).json({
-        ok: false,
+        success: false,
         message: "Usuario no encontrado"
       });
     }
 
-    // Obtener las tarifas
     const fares = await Fare.findAll();
 
-    // Obtener los acuerdos
     const agreements = await Agreement.findAll({
       where: {
         transportSecretaryId: vehicle.transportSecretaryId
@@ -375,25 +372,26 @@ exports.generateCard = async (req, res) => {
         transportSecretary: vehicle.TransportSecretary ? vehicle.TransportSecretary.name : null,
         registrationDate: vehicle.registrationDate,
         issueDate: vehicle.issueDate,
-        owner: vehicle.User && vehicle.User.Person ? 
-          `${vehicle.User.Person.firstName} ${vehicle.User.Person.lastName}` : null
+        owner: vehicle.ownerFullName
       },
-      driverInfo: {
+      userInfo: {
         id: user.id,
-        personInfo: person ? {
-          id: person.id,
-          documentNumber: person.documentNumber,
-          documentTypeId: person.documentTypeId,
-          firstName: person.firstName,
-          lastName: person.lastName,
-          bloodTypeId: person.bloodTypeId,
-          address: person.address,
-          phoneNumber: person.phoneNumber,
-          healthInsurance: person.healthInsurance,
-          workInsurance: person.workInsurance,
-          pension: person.pension,
-          licenseNumber: person.licenseNumber,
-          fullName: `${person.firstName} ${person.lastName}`
+        documentNumber: user.documentNumber,
+        documentTypeId: user.documentTypeId,
+        firstName: user.firstName,
+        middleName: user.middleName,
+        lastName: user.lastName,
+        secondLastName: user.secondLastName,
+        fullName: `${user.firstName} ${user.middleName} ${user.lastName} ${user.secondLastName}`,
+        driverInfo: driver ? {
+          id: driver.id,  
+          bloodTypeId: driver.bloodTypeId,
+          address: driver.address,
+          phoneNumber: driver.phoneNumber,
+          healthInsurance: driver.healthInsurance,
+          workInsurance: driver.workInsurance,
+          pension: driver.pension,
+          licenseNumber: driver.licenseNumber
         } : null
       },
       requirementInfo: {
@@ -452,4 +450,4 @@ exports.generateCard = async (req, res) => {
       error: error.message
     });
   }
-}
+};

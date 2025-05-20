@@ -11,6 +11,8 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       Company.belongsTo(models.TransportSecretary, { foreignKey: 'transportSecretaryId' });
+      Company.belongsTo(models.DocumentType, { foreignKey: 'legalRepresentativeDocumentTypeId' });
+
       Company.hasMany(models.Vehicle, { foreignKey: 'companyId' });
       Company.hasMany(models.User, { foreignKey: 'companyId' });
     }
@@ -34,6 +36,10 @@ module.exports = (sequelize, DataTypes) => {
     },
     legalRepresentativeName: {
       type: DataTypes.STRING,
+      allowNull: false
+    },
+    legalRepresentativeDocumentTypeId: {
+      type: DataTypes.INTEGER,
       allowNull: false
     },
     legalRepresentativeDocument: {

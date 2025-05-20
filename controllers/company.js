@@ -6,16 +6,21 @@ exports.getCompanies = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const offset = (page - 1) * limit;
+    const search = req.query.search || '';
+
+    const where = search ? {
+      [Op.or]: [
+        { name: { [Op.iLike || Op.like]: `%${search}%` } },
+        { nit: { [Op.like]: `%${search}%` } }
+      ]
+    } : {};
 
     const { count, rows: companies } = await Company.findAndCountAll({
+      where,
       include: [
         {
           model: TransportSecretary,
           attributes: ['id', 'name']
-        },
-        {
-          model: Person,
-          attributes: ['id', 'firstName', 'lastName']
         }
       ],
       limit,
@@ -25,6 +30,7 @@ exports.getCompanies = async (req, res) => {
 
     return res.status(200).json({
       success: true,
+      message: 'Empresas obtenidas exitosamente',
       data: {
         companies,
         pagination: {
@@ -53,10 +59,6 @@ exports.getCompanyById = async (req, res) => {
         {
           model: TransportSecretary,
           attributes: ['id', 'name']
-        },
-        {
-          model: Person,
-          attributes: ['id', 'documentNumber']
         }
       ]
     });
@@ -89,14 +91,18 @@ exports.createCompany = async (req, res) => {
       companyType, 
       name, 
       nit, 
-      docNumLegalRepresentative, 
+      legalRepresentativeName,
+      legalRepresentativeDocumentTypeId,
+      legalRepresentativeDocument,
       address, 
       phoneNumber, 
       email 
     } = req.body;
 
     if (!transportSecretaryId || !companyType || !name || !nit || 
-        !address || !phoneNumber || !email) {
+        !legalRepresentativeName || !legalRepresentativeDocumentTypeId || 
+        !legalRepresentativeDocument || !address || 
+        !phoneNumber || !email) {
       return res.status(400).json({
         success: false,
         message: 'Todos los campos son obligatorios'
@@ -108,18 +114,6 @@ exports.createCompany = async (req, res) => {
       return res.status(404).json({
         success: false,
         message: 'La Secretaría de Transporte no existe'
-      });
-    }
-
-    const person = await Person.findOne({
-      where: {
-        documentNumber: docNumLegalRepresentative
-      }
-    });
-    if (!person) {
-      return res.status(404).json({
-        success: false,
-        message: 'La Persona no existe'
       });
     }
 
@@ -136,7 +130,9 @@ exports.createCompany = async (req, res) => {
       companyType,
       name,
       nit,
-      legalRepresentativeId: person.id,
+      legalRepresentativeName,
+      legalRepresentativeDocumentTypeId,
+      legalRepresentativeDocument,
       address,
       phoneNumber,
       email
@@ -161,14 +157,16 @@ exports.updateCompany = async (req, res) => {
   const { id } = req.params;
   try {
     const { 
-      transportSecretaryId, 
-      companyType, 
-      name, 
-      nit, 
-      legalRepresentativeId, 
-      address, 
-      phoneNumber, 
-      email 
+      transportSecretaryId,
+      companyType,
+      name,
+      nit,
+      legalRepresentativeName,
+      legalRepresentativeDocumentTypeId,
+      legalRepresentativeDocument,
+      address,
+      phoneNumber,
+      email
     } = req.body;
 
     const company = await Company.findByPk(id);
@@ -189,16 +187,6 @@ exports.updateCompany = async (req, res) => {
       }
     }
 
-    if (legalRepresentativeId) {
-      const legalRepresentative = await Person.findByPk(legalRepresentativeId);
-      if (!legalRepresentative) {
-        return res.status(404).json({
-          success: false,
-          message: 'El representante legal no existe'
-        });
-      }
-    }
-
     if (nit && nit !== company.nit) {
       const existingCompany = await Company.findOne({ where: { nit } });
       if (existingCompany) {
@@ -214,7 +202,9 @@ exports.updateCompany = async (req, res) => {
       companyType: companyType || company.companyType,
       name: name || company.name,
       nit: nit || company.nit,
-      legalRepresentativeId: legalRepresentativeId || company.legalRepresentativeId,
+      legalRepresentativeName: legalRepresentativeName || company.legalRepresentativeName,
+      legalRepresentativeDocumentTypeId: legalRepresentativeDocumentTypeId || company.legalRepresentativeDocumentTypeId,
+      legalRepresentativeDocument: legalRepresentativeDocument || company.legalRepresentativeDocument,
       address: address || company.address,
       phoneNumber: phoneNumber || company.phoneNumber,
       email: email || company.email
@@ -222,8 +212,7 @@ exports.updateCompany = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: 'Empresa actualizada exitosamente',
-      data: company
+      message: 'Empresa actualizada exitosamente'
     });
   } catch (error) {
     console.error('Error updating company:', error);
@@ -233,7 +222,7 @@ exports.updateCompany = async (req, res) => {
       error: error.message
     });
   }
-};
+}
 
 exports.deleteCompany = async (req, res) => {
   const { id } = req.params;
@@ -271,9 +260,7 @@ exports.getOptions = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      data: {
-        transportSecretaries
-      }
+      data: transportSecretaries
     });
   } catch (error) {
     console.error('Error getting options:', error);

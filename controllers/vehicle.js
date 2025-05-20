@@ -3,25 +3,9 @@ const { Op } = require('sequelize');
 
 exports.createVehicle = async (req, res) => {
     try {
-        const person = await Person.findOne({
-            where: {
-                documentNumber: req.body.documentNumber
-            }
-        });
-
-        if (!person) {
-            return res.status(404).json({
-                success: false,
-                message: "No se encontró el usuario asociado con ese número de documento"
-            });
-        }
-
         const existingVehicle = await Vehicle.findOne({
-            where: {
-                licensePlate: req.body.licensePlate.toUpperCase()
-            }
+            where: { licensePlate: req.body.licensePlate.toUpperCase() }
         });
-
         if (existingVehicle) {
             return res.status(400).json({
                 success: false,
@@ -29,11 +13,7 @@ exports.createVehicle = async (req, res) => {
             });
         }
 
-        const vehicleData = {
-            ...req.body,
-            personId: person.id
-        };
-
+        const vehicleData = { ...req.body };
         for (const key in vehicleData) {
             if (typeof vehicleData[key] === 'string') {
                 vehicleData[key] = vehicleData[key].toUpperCase().trimEnd();
@@ -41,12 +21,12 @@ exports.createVehicle = async (req, res) => {
         }
 
         const vehicle = await Vehicle.create(vehicleData);
-        
+
         res.status(201).json({
             success: true,
-            data: vehicle
+            data: vehicle,
+            message: "Vehículo creado exitosamente"
         });
-
     } catch (error) {
         res.status(500).json({
             success: false,
@@ -79,8 +59,9 @@ exports.getAllVehicles = async (req, res) => {
 
         const totalPages = Math.ceil(count / limit);
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
+            message: 'Vehículos obtenidos exitosamente',
             data: {
                 vehicles,
                 pagination: {
@@ -92,8 +73,8 @@ exports.getAllVehicles = async (req, res) => {
             }
         });
     } catch (error) {
-        console.error('Error al obtener las Secretarías de Transporte:', error);
-        res.status(500).json({
+        console.error('Error al obtener los vehículos:', error);
+        return res.status(500).json({
             success: false,
             message: "Error al obtener los vehículos",
             error: error.message
@@ -103,12 +84,7 @@ exports.getAllVehicles = async (req, res) => {
 
 exports.getVehicleById = async (req, res) => {
     try {
-        const vehicle = await Vehicle.findByPk(req.params.id, {
-            include: [{
-                model: Person,
-                attributes: ['documentNumber']
-            }]
-        });
+        const vehicle = await Vehicle.findByPk(req.params.id);
 
         if (!vehicle) {
             return res.status(404).json({
@@ -118,21 +94,21 @@ exports.getVehicleById = async (req, res) => {
         }
 
         const vehiclePlain = vehicle.toJSON();
-
         const formatDate = (date) => date ? date.toISOString().split('T')[0] : '';
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
+            message: 'Vehículo obtenido exitosamente',
             data: {
                 ...vehiclePlain,
                 documentNumber: vehiclePlain.Person?.documentNumber || '',
                 importDate: formatDate(vehiclePlain.importDate),
                 registrationDate: formatDate(vehiclePlain.registrationDate),
-                issueDate: formatDate(vehiclePlain.issueDate),
+                issueDate: formatDate(vehiclePlain.issueDate)
             }
         });
     } catch (error) {
-        res.status(500).json({
+        return res.status(500).json({
             success: false,
             message: "Error al obtener el vehículo",
             error: error.message
@@ -151,19 +127,6 @@ exports.updateVehicle = async (req, res) => {
             });
         }
 
-        const person = await Person.findOne({
-            where: {
-                documentNumber: req.body.documentNumber
-            }
-        });
-
-        if (!person) {
-            return res.status(404).json({
-                success: false,
-                message: "No se encontró el usuario asociado con ese número de documento"
-            });
-        }
-
         const existingVehicle = await Vehicle.findOne({
             where: {
                 licensePlate: req.body.licensePlate.toUpperCase(),
@@ -178,11 +141,7 @@ exports.updateVehicle = async (req, res) => {
             });
         }
 
-        const vehicleData = {
-            ...req.body,
-            personId: vehicle.personId
-        };
-
+        const vehicleData = { ...req.body };
         for (const key in vehicleData) {
             if (typeof vehicleData[key] === 'string') {
                 vehicleData[key] = vehicleData[key].toUpperCase().trimEnd();
@@ -191,13 +150,12 @@ exports.updateVehicle = async (req, res) => {
 
         await vehicle.update(vehicleData);
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
-            data: vehicle,
             message: "Vehículo actualizado exitosamente"
         });
     } catch (error) {
-        res.status(500).json({
+        return res.status(500).json({
             success: false,
             message: "Error al actualizar el vehículo",
             error: error.message
@@ -218,12 +176,12 @@ exports.deleteVehicle = async (req, res) => {
 
         await vehicle.destroy();
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             message: "Vehículo eliminado exitosamente"
         });
     } catch (error) {
-        res.status(500).json({
+        return res.status(500).json({
             success: false,
             message: "Error al eliminar el vehículo",
             error: error.message
@@ -251,7 +209,7 @@ exports.getVehicleOptions = async (req, res) => {
             })
         ]);
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             data: {
                 companies,
@@ -264,7 +222,7 @@ exports.getVehicleOptions = async (req, res) => {
         });
 
     } catch (error) {
-        res.status(500).json({
+        return res.status(500).json({
             success: false,
             message: "Error al obtener las relaciones",
             error: error.message
@@ -306,14 +264,14 @@ exports.getVehicleWithRelations = async (req, res) => {
             });
         }
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             data: vehicle,
             message: "Vehículo y sus relaciones obtenidos exitosamente"
         });
 
     } catch (error) {
-        res.status(500).json({
+        return res.status(500).json({
             success: false,
             message: "Error al obtener el vehículo y sus relaciones",
             error: error.message
