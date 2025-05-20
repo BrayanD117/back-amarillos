@@ -13,6 +13,8 @@ module.exports = (sequelize, DataTypes) => {
       User.belongsTo(models.Status, { foreignKey: 'statusId' });
       User.belongsTo(models.Role, { foreignKey: 'roleId' });
       User.hasOne(models.Person, { foreignKey: 'userId' });
+      User.belongsTo(models.Company, { foreignKey: 'companyId' });
+      User.belongsTo(models.TransportSecretary, { foreignKey: 'transportSecretaryId' });
     }
   }
   User.init({
@@ -32,6 +34,46 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false
     },
+    firstName: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    middleName: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    lastName: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    secondLastName: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    documentNumber: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    companyId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'Companies',
+        key: 'id'
+      },
+      onUpdate: 'CASCADE',
+      onDelete: 'SET NULL'
+    },
+    transportSecretaryId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'TransportSecretaries',
+        key: 'id'
+      },
+      onUpdate: 'CASCADE',
+      onDelete: 'SET NULL'
+    }
   }, {
     sequelize,
     modelName: 'User',
