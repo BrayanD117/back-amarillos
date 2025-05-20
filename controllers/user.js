@@ -26,7 +26,7 @@ exports.createUser = async (req, res) => {
 
     try {
       newUser = await User.create({
-        username,
+        username: username.toUpperCase(),
         password: passwordHash,
         roleId,
         statusId,
@@ -64,16 +64,16 @@ exports.getAllUsers = async (req, res) => {
     const offset = (page - 1) * limit;
     const search = String(req.query.search || '').trim().toUpperCase();
 
-    const wherePerson = search
+    const whereUser = search
       ? {
           [Op.or]: [
-            where(fn('UPPER', col('Person.documentNumber')), {
+            where(fn('UPPER', col('User.documentNumber')), {
               [Op.like]: `%${search}%`
             }),
-            where(fn('UPPER', col('Person.firstName')), {
+            where(fn('UPPER', col('User.firstName')), {
               [Op.like]: `%${search}%`
             }),
-            where(fn('UPPER', col('Person.lastName')), {
+            where(fn('UPPER', col('User.lastName')), {
               [Op.like]: `%${search}%`
             })
           ]
@@ -83,24 +83,14 @@ exports.getAllUsers = async (req, res) => {
     const { count, rows: users } = await User.findAndCountAll({
       offset,
       limit,
-      include: [{
-        model: Person,
-        where: wherePerson,
-        include: [
-          {
-            model: DocumentType,
-            attributes: ['name']
-          },
-          {
-            model: BloodType,
-            attributes: ['name']
-          },
-          {
-            model: LicenseCategory,
-            attributes: ['name']
-          }
-        ]
-      }]
+      where: whereUser,
+      include: [
+        { model: Role, attributes: ['id', 'name'] },
+        { model: Status, attributes: ['id', 'name'] },
+        { model: TransportSecretary, attributes: ['id', 'name'] },
+        // { model: Company, attributes: ['id', 'name'] },
+        { model: DocumentType, attributes: ['id', 'name'] }
+      ]
     });
 
     res.json({
