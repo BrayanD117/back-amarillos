@@ -11,8 +11,8 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       Company.belongsTo(models.TransportSecretary, { foreignKey: 'transportSecretaryId' });
-
       Company.hasMany(models.Vehicle, { foreignKey: 'companyId' });
+      Company.hasMany(models.User, { foreignKey: 'companyId' });
     }
   }
   Company.init({
@@ -32,6 +32,14 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false
     },
+    legalRepresentativeName: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    legalRepresentativeDocument: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
     address: {
       type: DataTypes.STRING,
       allowNull: false
@@ -43,7 +51,7 @@ module.exports = (sequelize, DataTypes) => {
     email: {
       type: DataTypes.STRING,
       allowNull: false
-    }
+    },
   }, {
     sequelize,
     modelName: 'Company',

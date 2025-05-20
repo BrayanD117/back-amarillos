@@ -17,6 +17,7 @@ module.exports = (sequelize, DataTypes) => {
       TransportSecretary.hasMany(models.Surcharge, { foreignKey: "transportSecretaryId" });
       TransportSecretary.hasMany(models.Vehicle, { foreignKey: "transportSecretaryId" });
       TransportSecretary.hasMany(models.Fare, { foreignKey: "transportSecretaryId" });
+      TransportSecretary.hasMany(models.User, { foreignKey: "transportSecretaryId" });
     }
   }
 
