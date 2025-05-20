@@ -19,11 +19,11 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'SET NULL'
       },
-      personId: {
+      driverId: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: 'People',
+          model: 'Drivers',
           key: 'id'
         },
         onUpdate: 'CASCADE',

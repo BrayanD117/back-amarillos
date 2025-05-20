@@ -19,16 +19,6 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'SET NULL'
       },
-      personId: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: {
-          model: 'People',
-          key: 'id'
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'SET NULL'
-      },
       statusId: {
         type: Sequelize.INTEGER,
         allowNull: false,

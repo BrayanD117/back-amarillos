@@ -31,10 +31,6 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false
       },
-      legalRepresentativeId: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-      },
       address: {
         type: Sequelize.STRING,
         allowNull: false

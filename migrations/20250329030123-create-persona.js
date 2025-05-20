@@ -2,22 +2,12 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('People', {
+    await queryInterface.createTable('Drivers', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
-      },
-      companyId: {
-        type: Sequelize.INTEGER,
-        allowNull: true,
-        references: {
-          model: 'Companies',
-          key: 'id'
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'SET NULL'
       },
       userId: {
         type: Sequelize.INTEGER,
@@ -28,34 +18,6 @@ module.exports = {
         },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
-      },
-      lastName: {
-        type: Sequelize.STRING(50),
-        allowNull: false,
-      },
-      secondLastName: {
-        type: Sequelize.STRING(50)
-      },
-      firstName: {
-        type: Sequelize.STRING(50),
-        allowNull: false,
-      },
-      secondName: {
-        type: Sequelize.STRING(50)
-      },
-      documentTypeId: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: {
-          model: 'DocumentTypes',
-          key: 'id'
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'SET NULL'
-      },
-      documentNumber: {
-        type: Sequelize.STRING(50),
-        allowNull: false,
       },
       address: {
         type: Sequelize.STRING(100),
@@ -105,16 +67,6 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'SET NULL'
       },
-      transportSecretaryId: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: {
-          model: 'TransportSecretaries',
-          key: 'id'
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'SET NULL'
-      },
       expirationDate: {
         type: Sequelize.DATE,
         allowNull: false,
@@ -133,6 +85,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('People');
+    await queryInterface.dropTable('Drivers');
   }
 };

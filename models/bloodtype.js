@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      BloodType.hasMany(models.Person, { foreignKey: 'bloodTypeId' });
+      BloodType.hasMany(models.Driver, { foreignKey: 'bloodTypeId' });
     }
   }
   BloodType.init({
