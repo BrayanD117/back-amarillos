@@ -1,87 +1,51 @@
-const { User, Person, DocumentType, BloodType, LicenseCategory, Status, Role, TransportSecretary, City, Department } = require('../models');
+const { User, DocumentType, Status, Role, TransportSecretary, Company } = require('../models');
 const bcrypt = require('bcrypt');
 const { Op, fn, col, where } = require('sequelize');
 
 exports.createUser = async (req, res) => {
   try {
     const {
+      transportSecretaryId,
       lastName,
       secondLastName,
       firstName,
-      secondName,
+      middleName,
       documentTypeId,
       documentNumber,
-      address,
-      phoneNumber,
-      bloodTypeId,
-      rhFactor,
-      healthInsurance,
-      workInsurance,
-      pension,
-      licenseNumber,
-      licenseCategoryId,
-      transportSecretaryId,
-      expirationDate,
-      photo,
-
       username,
       password,
       roleId,
-      statusId
+      statusId,
+      companyId
     } = req.body;
 
     const salt = bcrypt.genSaltSync();
     const passwordHash = bcrypt.hashSync(password, salt);
 
     let newUser;
-    let person;
 
     try {
       newUser = await User.create({
-        username,
+        username: username.toUpperCase(),
         password: passwordHash,
         roleId,
-        statusId
+        statusId,
+        lastName: lastName.toUpperCase(),
+        secondLastName: secondLastName?.toUpperCase(),
+        firstName: firstName.toUpperCase(),
+        middleName: middleName?.toUpperCase(),
+        documentTypeId,
+        documentNumber: documentNumber.toUpperCase(),
+        companyId,
+        transportSecretaryId
       });
-
-      try {
-        person = await Person.create({
-          lastName: lastName.toUpperCase(),
-          secondLastName: secondLastName?.toUpperCase(),
-          firstName: firstName.toUpperCase(),
-          secondName: secondName?.toUpperCase(),
-          documentTypeId,
-          documentNumber: documentNumber.toUpperCase(),
-          address: address.toUpperCase(),
-          phoneNumber: phoneNumber.toUpperCase(),
-          bloodTypeId,
-          rhFactor: rhFactor.toUpperCase(),
-          healthInsurance: healthInsurance.toUpperCase(),
-          workInsurance: workInsurance.toUpperCase(),
-          pension: pension.toUpperCase(),
-          licenseNumber: licenseNumber.toUpperCase(),
-          licenseCategoryId,
-          transportSecretaryId,
-          expirationDate,
-          photo,
-          userId: newUser.id
-        });
-
-      } catch (error) {
-        await User.destroy({ where: { id: newUser.id } });
-        throw error;
-      }
-
     } catch (error) {
       throw error;
     }
 
     res.status(201).json({
       ok: true,
-      user: {
-        ...newUser.dataValues,
-        person: person.dataValues
-      }
+      user: newUser
     });
 
   } catch (error) {
@@ -100,16 +64,16 @@ exports.getAllUsers = async (req, res) => {
     const offset = (page - 1) * limit;
     const search = String(req.query.search || '').trim().toUpperCase();
 
-    const wherePerson = search
+    const whereUser = search
       ? {
           [Op.or]: [
-            where(fn('UPPER', col('Person.documentNumber')), {
+            where(fn('UPPER', col('User.documentNumber')), {
               [Op.like]: `%${search}%`
             }),
-            where(fn('UPPER', col('Person.firstName')), {
+            where(fn('UPPER', col('User.firstName')), {
               [Op.like]: `%${search}%`
             }),
-            where(fn('UPPER', col('Person.lastName')), {
+            where(fn('UPPER', col('User.lastName')), {
               [Op.like]: `%${search}%`
             })
           ]
@@ -119,24 +83,14 @@ exports.getAllUsers = async (req, res) => {
     const { count, rows: users } = await User.findAndCountAll({
       offset,
       limit,
-      include: [{
-        model: Person,
-        where: wherePerson,
-        include: [
-          {
-            model: DocumentType,
-            attributes: ['name']
-          },
-          {
-            model: BloodType,
-            attributes: ['name']
-          },
-          {
-            model: LicenseCategory,
-            attributes: ['name']
-          }
-        ]
-      }]
+      where: whereUser,
+      include: [
+        { model: Role, attributes: ['id', 'name'] },
+        { model: Status, attributes: ['id', 'name'] },
+        { model: TransportSecretary, attributes: ['id', 'name'] },
+        { model: Company, attributes: ['id', 'name'] },
+        { model: DocumentType, attributes: ['id', 'name'] }
+      ]
     });
 
     res.json({
@@ -161,23 +115,13 @@ exports.getUserById = async (req, res) => {
 
   try {
     const user = await User.findByPk(id, {
-      include: [{
-        model: Person,
-        include: [
-          {
-            model: DocumentType,
-            attributes: ['name']
-          },
-          {
-            model: BloodType,
-            attributes: ['name']
-          },
-          {
-            model: LicenseCategory,
-            attributes: ['name']
-          }
-        ]
-      }]
+      include: [
+        { model: Role, attributes: ['id', 'name'] },
+        { model: Status, attributes: ['id', 'name'] },
+        { model: TransportSecretary, attributes: ['id', 'name'] },
+        { model: Company, attributes: ['id', 'name'] },
+        { model: DocumentType, attributes: ['id', 'name'] }
+      ]
     });
 
     if (!user) {
@@ -207,24 +151,14 @@ exports.updateUser = async (req, res) => {
     lastName,
     secondLastName,
     firstName,
-    secondName,
+    middleName,
     documentTypeId,
     documentNumber,
-    address,
-    phoneNumber,
-    bloodTypeId,
-    rhFactor,
-    healthInsurance,
-    workInsurance,
-    pension,
-    licenseNumber,
-    licenseCategoryId,
     transportSecretaryId,
-    expirationDate,
-    photo,
     username,
     roleId,
-    statusId
+    statusId,
+    companyId
   } = req.body;
 
   try {
@@ -240,53 +174,20 @@ exports.updateUser = async (req, res) => {
     const userData = {
       ...(username && { username: username.toUpperCase() }),
       ...(roleId && { roleId }),
-      ...(statusId && { statusId })
+      ...(statusId && { statusId }),
+      ...(lastName && { lastName: lastName.toUpperCase() }),
+      ...(secondLastName && { secondLastName: secondLastName?.toUpperCase() }),
+      ...(firstName && { firstName: firstName.toUpperCase() }),
+      ...(middleName && { middleName: middleName?.toUpperCase() }),
+      ...(documentTypeId && { documentTypeId }),
+      ...(documentNumber && { documentNumber: documentNumber.toUpperCase() }),
+      ...(transportSecretaryId && { transportSecretaryId }),
+      ...(companyId && { companyId })
     };
 
     await existingUser.update(userData);
 
-    const existingPerson = await Person.findOne({ where: { userId: id } });
-
-    if (!existingPerson) {
-      return res.status(404).json({
-        ok: false,
-        msg: 'Datos de persona no encontrados'
-      });
-    }
-
-    const personData = {
-      ...(lastName && { lastName: lastName.toUpperCase() }),
-      ...(secondLastName && { secondLastName: secondLastName?.toUpperCase() }),
-      ...(firstName && { firstName: firstName.toUpperCase() }),
-      ...(secondName && { secondName: secondName?.toUpperCase() }),
-      ...(documentTypeId && { documentTypeId }),
-      ...(documentNumber && { documentNumber: documentNumber.toUpperCase() }),
-      ...(address && { address: address.toUpperCase() }),
-      ...(phoneNumber && { phoneNumber: phoneNumber.toUpperCase() }),
-      ...(bloodTypeId && { bloodTypeId }),
-      ...(rhFactor && { rhFactor: rhFactor.toUpperCase() }),
-      ...(healthInsurance && { healthInsurance: healthInsurance.toUpperCase() }),
-      ...(workInsurance && { workInsurance: workInsurance.toUpperCase() }),
-      ...(pension && { pension: pension.toUpperCase() }),
-      ...(licenseNumber && { licenseNumber: licenseNumber.toUpperCase() }),
-      ...(licenseCategoryId && { licenseCategoryId }),
-      ...(transportSecretaryId && { transportSecretaryId }),
-      ...(expirationDate && { expirationDate }),
-      ...(photo && { photo })
-    };
-
-    await existingPerson.update(personData);
-
-    const updatedUser = await User.findByPk(id, {
-      include: [{
-        model: Person,
-        include: [
-          { model: DocumentType },
-          { model: BloodType },
-          { model: LicenseCategory }
-        ]
-      }]
-    });
+    const updatedUser = await User.findByPk(id);
 
     res.json({
       ok: true,
@@ -333,7 +234,7 @@ exports.deleteUser = async (req, res) => {
 
 exports.getUserOptions = async (req, res) => {
   try {
-    const [roles, status, documentTypes, bloodTypes, licenseCategories, transportSecretaries] = await Promise.all([
+    const [roles, status, documentTypes, transportSecretaries, companies] = await Promise.all([
       Role.findAll({
         attributes: ['id', 'name'],
       }),
@@ -343,13 +244,10 @@ exports.getUserOptions = async (req, res) => {
       DocumentType.findAll({
         attributes: ['id', 'name']
       }),
-      BloodType.findAll({
-        attributes: ['id', 'name']
-      }),
-      LicenseCategory.findAll({
-        attributes: ['id', 'name']
-      }),
       TransportSecretary.findAll({
+        attributes: ['id', 'name'],
+      }),
+      Company.findAll({
         attributes: ['id', 'name'],
       })
     ]);
@@ -360,9 +258,8 @@ exports.getUserOptions = async (req, res) => {
         roles,
         status,
         documentTypes,
-        bloodTypes,
-        licenseCategories,
         transportSecretaries,
+        companies
       },
       message: "Opciones obtenidas exitosamente"
     });

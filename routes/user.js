@@ -3,7 +3,7 @@ const router = express.Router();
 const usuarioController = require('../controllers/user');
 const { verifyToken, isAdmin } = require('../middlewares/authJwt');
 
-router.post('/', usuarioController.createUser);
+router.post('/', verifyToken, isAdmin, usuarioController.createUser);
 
 
 router.get('/options', usuarioController.getUserOptions);
