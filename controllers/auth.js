@@ -26,6 +26,7 @@ exports.login = async (req, res) => {
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'Strict',
             maxAge: 60 * 60 * 1000,
+            path: '/'
         })
 
         return res.json({
@@ -42,6 +43,11 @@ exports.login = async (req, res) => {
 };
 
 exports.logout = (req, res) => {
-    res.clearCookie('accessToken');
-    return res.json({ message: 'Cierre de sesión exitoso' });
+  res.clearCookie('accessToken', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'Strict',
+    path: '/'
+  });
+  return res.json({ message: 'Cierre de sesión exitoso' });
 };
