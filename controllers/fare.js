@@ -111,6 +111,13 @@ exports.createFare = async (req, res) => {
       });
     }
 
+    if (isNaN(hour)) {
+      return res.status(400).json({
+        success: false,
+        message: 'El valor de hour debe ser un número decimal válido'
+      });
+    }
+
     const transportSecretary = await TransportSecretary.findByPk(transportSecretaryId);
     if (!transportSecretary) {
       return res.status(404).json({
@@ -164,6 +171,13 @@ exports.updateFare = async (req, res) => {
           message: 'La Secretaría de Transporte no existe'
         });
       }
+    }
+
+    if (hour !== undefined && isNaN(hour)) {
+      return res.status(400).json({
+        success: false,
+        message: 'El valor de hour debe ser un número decimal válido'
+      });
     }
 
     await fare.update({
