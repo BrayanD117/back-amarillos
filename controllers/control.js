@@ -1,4 +1,4 @@
-const { Control, Vehicle, Person } = require('../models');
+const { Control, Vehicle, Driver, User } = require('../models');
 const { Op } = require('sequelize');
 
 exports.getControls = async (req, res) => {
@@ -14,8 +14,14 @@ exports.getControls = async (req, res) => {
           attributes: ['id', 'licensePlate']
         },
         {
-          model: Person,
-          attributes: ['id', 'firstName', 'lastName']
+          model: Driver,
+          attributes: ['id'],
+          include: [
+            {
+              model: User,
+              attributes: ['id', 'firstName', 'lastName']
+            }
+          ]
         }
       ],
       limit,
@@ -55,8 +61,14 @@ exports.getControlById = async (req, res) => {
           attributes: ['id', 'licensePlate']
         },
         {
-          model: Person,
-          attributes: ['id', 'firstName', 'lastName']
+          model: Driver,
+          attributes: ['id'],
+          include: [
+            {
+              model: User,
+              attributes: ['id', 'firstName', 'lastName']
+            }
+          ]
         }
       ]
     });
@@ -93,8 +105,14 @@ exports.getControlsByVehicle = async (req, res) => {
           attributes: ['id', 'plate', 'model', 'brand']
         },
         {
-          model: Person,
-          attributes: ['id', 'firstName', 'lastName', 'documentNumber']
+          model: Driver,
+          attributes: ['id'],
+          include: [
+            {
+              model: User,
+              attributes: ['id', 'documentNumber',  'firstName', 'lastName']
+            }
+          ]
         }
       ],
       order: [['createdAt', 'DESC']]
@@ -114,19 +132,25 @@ exports.getControlsByVehicle = async (req, res) => {
   }
 };
 
-exports.getControlsByPerson = async (req, res) => {
-  const { personId } = req.params;
+exports.getControlsByDriver = async (req, res) => {
+  const { driverId } = req.params;
   try {
     const controls = await Control.findAll({
-      where: { personId },
+      where: { driverId },
       include: [
         {
           model: Vehicle,
           attributes: ['id', 'plate', 'model', 'brand']
         },
         {
-          model: Person,
-          attributes: ['id', 'firstName', 'lastName', 'documentNumber']
+          model: Driver,
+          attributes: ['id'],
+          include: [
+            {
+              model: User,
+              attributes: ['id', 'documentNumber', 'firstName', 'lastName']
+            }
+          ]
         }
       ],
       order: [['createdAt', 'DESC']]
@@ -148,12 +172,12 @@ exports.getControlsByPerson = async (req, res) => {
 
 exports.createControl = async (req, res) => {
   try {
-    const { vehicleId, personId, news, accident, validation, control } = req.body;
+    const { vehicleId, driverId, news, accident, validation, control } = req.body;
 
-    if (!vehicleId || !personId) {
+    if (!vehicleId || !driverId) {
       return res.status(400).json({
         success: false,
-        message: 'El vehículo y la persona son campos obligatorios'
+        message: 'El vehículo y el conductor son campos obligatorios'
       });
     }
 
@@ -165,17 +189,17 @@ exports.createControl = async (req, res) => {
       });
     }
 
-    const person = await Person.findByPk(personId);
-    if (!person) {
+    const driver = await Driver.findByPk(driverId);
+    if (!driver) {
       return res.status(404).json({
         success: false,
-        message: 'La persona no existe'
+        message: 'El conductor no existe'
       });
     }
 
     const newControl = await Control.create({
       vehicleId,
-      personId,
+      driverId,
       news,
       accident,
       validation,
@@ -200,7 +224,7 @@ exports.createControl = async (req, res) => {
 exports.updateControl = async (req, res) => {
   const { id } = req.params;
   try {
-    const { vehicleId, personId, news, accident, validation, control } = req.body;
+    const { vehicleId, driverId, news, accident, validation, control } = req.body;
 
     const existingControl = await Control.findByPk(id);
     if (!existingControl) {
@@ -220,19 +244,19 @@ exports.updateControl = async (req, res) => {
       }
     }
 
-    if (personId) {
-      const person = await Person.findByPk(personId);
-      if (!person) {
+    if (driverId) {
+      const driver = await Driver.findByPk(driverId);
+      if (!driver) {
         return res.status(404).json({
           success: false,
-          message: 'La persona no existe'
+          message: 'El conductor no existe'
         });
       }
     }
 
     await existingControl.update({
       vehicleId: vehicleId || existingControl.vehicleId,
-      personId: personId || existingControl.personId,
+      driverId: driverId || existingControl.driverId,
       news: news !== undefined ? news : existingControl.news,
       accident: accident !== undefined ? accident : existingControl.accident,
       validation: validation !== undefined ? validation : existingControl.validation,
@@ -288,16 +312,21 @@ exports.getOptions = async (req, res) => {
       order: [['licensePlate', 'ASC']]
     });
 
-    const people = await Person.findAll({
-      attributes: ['id', 'firstName', 'lastName'],
-      order: [['lastName', 'ASC'], ['firstName', 'ASC']]
+    const drivers = await Driver.findAll({
+      attributes: ['id'],
+      include: [
+        {
+          model: User,
+          attributes: ['id', 'firstName', 'lastName']
+        }
+      ]
     });
 
     return res.status(200).json({
       success: true,
       data: {
         vehicles,
-        people
+        drivers
       }
     });
   } catch (error) {
