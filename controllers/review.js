@@ -1,4 +1,4 @@
-const { Review, Vehicle, Person } = require('../models');
+const { Review, Vehicle, User, Driver } = require('../models');
 const { Op } = require('sequelize');
 
 exports.getReviews = async (req, res) => {
@@ -14,8 +14,14 @@ exports.getReviews = async (req, res) => {
           attributes: ['id', 'licensePlate', 'brand', 'model']
         },
         {
-          model: Person,
-          attributes: ['id', 'firstName', 'lastName', 'documentNumber']
+          model: Driver,
+          attributes: ['id'],
+          include: [
+            {
+              model: User,
+              attributes: ['id', 'documentNumber', 'firstName', 'lastName']
+            }
+          ]
         }
       ],
       limit,
@@ -53,8 +59,14 @@ exports.getReviewById = async (req, res) => {
           attributes: ['id', 'licensePlate', 'brand', 'model']
         },
         {
-          model: Person,
-          attributes: ['id', 'firstName', 'lastName', 'documentNumber']
+          model: Driver,
+          attributes: ['id'],
+          include: [
+            {
+              model: User,
+              attributes: ['id', 'documentNumber', 'firstName', 'lastName']
+            }
+          ]
         }
       ]
     });
@@ -91,8 +103,14 @@ exports.getReviewsByVehicle = async (req, res) => {
           attributes: ['id', 'licensePlate', 'brand', 'model']
         },
         {
-          model: Person,
-          attributes: ['id', 'firstName', 'lastName', 'documentNumber']
+          model: Driver,
+          attributes: ['id'],
+          include: [
+            {
+              model: User,
+              attributes: ['id', 'documentNumber', 'firstName', 'lastName']
+            }
+          ]
         }
       ],
       order: [['createdAt', 'DESC']]
@@ -121,18 +139,24 @@ exports.getReviewsByVehicle = async (req, res) => {
 };
 
 exports.getReviewsByPerson = async (req, res) => {
-  const { personId } = req.params;
+  const { driverId } = req.params;
   try {
     const reviews = await Review.findAll({
-      where: { personId },
+      where: { driverId },
       include: [
         {
           model: Vehicle,
           attributes: ['id', 'licensePlate', 'brand', 'model']
         },
         {
-          model: Person,
-          attributes: ['id', 'firstName', 'lastName', 'documentNumber']
+          model: Driver,
+          attributes: ['id'],
+          include: [
+            {
+              model: User,
+              attributes: ['id', 'documentNumber', 'firstName', 'lastName']
+            }
+          ]
         }
       ],
       order: [['createdAt', 'DESC']]
@@ -154,9 +178,9 @@ exports.getReviewsByPerson = async (req, res) => {
 
 exports.createReview = async (req, res) => {
   try {
-    const { vehicleId, personId, rating, comment } = req.body;
+    const { vehicleId, driverId, rating, comment } = req.body;
 
-    if (!vehicleId || !personId || !rating || !comment) {
+    if (!vehicleId || !driverId || !rating || !comment) {
       return res.status(400).json({
         success: false,
         message: 'Todos los campos son obligatorios'
@@ -178,17 +202,17 @@ exports.createReview = async (req, res) => {
       });
     }
 
-    const person = await Person.findByPk(personId);
-    if (!person) {
+    const driver = await Driver.findByPk(driverId);
+    if (!driver) {
       return res.status(404).json({
         success: false,
-        message: 'La persona no existe'
+        message: 'El conductor no existe'
       });
     }
 
     const newReview = await Review.create({
       vehicleId,
-      personId,
+      driverId,
       rating,
       comment
     });
@@ -211,7 +235,7 @@ exports.createReview = async (req, res) => {
 exports.updateReview = async (req, res) => {
   const { id } = req.params;
   try {
-    const { vehicleId, personId, rating, comment } = req.body;
+    const { vehicleId, driverId, rating, comment } = req.body;
 
     const review = await Review.findByPk(id);
     if (!review) {
@@ -238,19 +262,19 @@ exports.updateReview = async (req, res) => {
       }
     }
 
-    if (personId) {
-      const person = await Person.findByPk(personId);
-      if (!person) {
+    if (driverId) {
+      const driver = await Driver.findByPk(driverId);
+      if (!driver) {
         return res.status(404).json({
           success: false,
-          message: 'La persona no existe'
+          message: 'El conductor no existe'
         });
       }
     }
 
     await review.update({
       vehicleId: vehicleId || review.vehicleId,
-      personId: personId || review.personId,
+      driverId: driverId || review.driverId,
       rating: rating !== undefined ? rating : review.rating,
       comment: comment || review.comment
     });
@@ -304,16 +328,21 @@ exports.getOptions = async (req, res) => {
       order: [['licensePlate', 'ASC']]
     });
 
-    const persons = await Person.findAll({
-      attributes: ['id', 'firstName', 'lastName', 'documentNumber'],
-      order: [['lastName', 'ASC'], ['firstName', 'ASC']]
+    const drivers = await Driver.findAll({
+      attributes: ['id'],
+      include: [
+        {
+          model: User,
+          attributes: ['id', 'documentNumber', 'firstName', 'lastName']
+        }
+      ]
     });
 
     return res.status(200).json({
       success: true,
       data: {
         vehicles,
-        persons
+        drivers
       }
     });
   } catch (error) {
