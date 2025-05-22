@@ -132,12 +132,12 @@ exports.generateCardPdf = async (req, res) => {
   try {
     const { cardId } = req.params;
     if (!cardId) {
-      return res.status(400).json({ ok: false, msg: 'Falta cardId' });
+      return res.status(400).json({ success: false, msg: 'Falta cardId' });
     }
 
     const cardData = await buildCardData(cardId);
     if (!cardData) {
-      return res.status(404).json({ ok: false, msg: 'Tarjeta no encontrada' });
+      return res.status(404).json({ success: false, msg: 'Tarjeta no encontrada' });
     }
 
     const templateBytes = fs.readFileSync(
@@ -153,14 +153,14 @@ exports.generateCardPdf = async (req, res) => {
     txt(cardData.vehicleInfo.licensePlate,   250, 2620);
     txt(cardData.vehicleInfo.internalNumber, 1500, 2620);
 
-    const p = cardData.driverInfo.personInfo;
+    const p = cardData.userInfo;
     txt(`${p.firstName} ${p.lastName}`,       430, 2400);
     txt(p.documentNumber,                    1200, 2400);
-    txt(p.address,                           370, 2500);
-    txt(p.healthInsurance,                   210, 2165);
-    txt(p.workInsurance,                     710, 2165);
-    txt(p.pension,                           1350, 2165);
-    txt(p.bloodTypeId ? `${p.bloodTypeId}` : '', 500, 2280);
+    txt(p.driverInfo.address,                           370, 2500);
+    txt(p.driverInfo.healthInsurance,                   210, 2165);
+    txt(p.driverInfo.workInsurance,                     710, 2165);
+    txt(p.driverInfo.pension,                           1350, 2165);
+    txt(p.driverInfo.bloodTypeId ? `${p.driverInfo.bloodTypeId}` : '', 500, 2280);
 
     txt(cardData.cardInfo.number,            550, 2050);
     txt(dateCol(cardData.cardInfo.expirationDate), 1450, 2050);
@@ -204,6 +204,6 @@ exports.generateCardPdf = async (req, res) => {
     return res.send(Buffer.from(bytes));
   } catch (err) {
     console.error(err);
-    res.status(500).json({ ok: false, msg: 'Error al generar PDF' });
+    return res.status(500).json({ ok: false, msg: 'Error al generar PDF' });
   }
 };

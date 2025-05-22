@@ -1,4 +1,4 @@
-const { Vehicle, Person, User, Status, Service, Fuel, TransportSecretary, Company } = require('../models');
+const { Vehicle, DocumentType, User, Status, Service, Fuel, TransportSecretary, Company } = require('../models');
 const { Op } = require('sequelize');
 
 exports.createVehicle = async (req, res) => {
@@ -191,7 +191,10 @@ exports.deleteVehicle = async (req, res) => {
 
 exports.getVehicleOptions = async (req, res) => {
     try {
-        const [companies, status, services, fuels, transportSecretaries] = await Promise.all([
+        const [documentTypes, companies, status, services, fuels, transportSecretaries] = await Promise.all([
+            DocumentType.findAll({
+                attributes: ['id', 'name']
+            }),
             Company.findAll({
                 attributes: ['id', 'name']
             }),
@@ -212,6 +215,7 @@ exports.getVehicleOptions = async (req, res) => {
         return res.status(200).json({
             success: true,
             data: {
+                documentTypes,
                 companies,
                 status,
                 services,

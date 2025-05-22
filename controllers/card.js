@@ -1,20 +1,20 @@
-const { Card, Vehicle, User, Fare, Person, Status, Service, Fuel, TransportSecretary, Requirement, Agreement } = require('../models');
+const { Card, Vehicle, User, Fare, Person, Status, Service, Driver, TransportSecretary, Requirement, Agreement } = require('../models');
 const { Op, fn, col, where } = require('sequelize');
 
 exports.createCard = async (req, res) => {
-    try {
-        const card = await Card.create(req.body);
-        res.status(201).json({
-            ok: true,
-            data: card
-        });
-    } catch (error) {
-        res.status(500).json({
-            ok: false,
-            message: "Error al crear la tarjeta",
-            error: error.message
-        });
-    }
+  try {
+      const card = await Card.create(req.body);
+      return res.status(201).json({
+          success: true,
+          data: card
+      });
+  } catch (error) {
+      return res.status(500).json({
+          success: false,
+          message: "Error al crear la tarjeta",
+          error: error.message
+      });
+  }
 };
 
 exports.getAllCards = async (req, res) => {
@@ -54,6 +54,7 @@ exports.getAllCards = async (req, res) => {
             },
             {
               model: Driver,
+              attributes: ['id', 'userId'],
               include: [
                 {
                   model: User,
@@ -67,7 +68,7 @@ exports.getAllCards = async (req, res) => {
         ]
     });
 
-    res.json({
+    return res.status(200).json({
       success: true,
       data: {
         cards,
@@ -82,7 +83,7 @@ exports.getAllCards = async (req, res) => {
 
   } catch (error) {
     console.log(error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Error al obtener las tarjetas.',
       error: error.message
@@ -102,6 +103,7 @@ exports.getCardById = async (req, res) => {
         },
         {
           model: Driver,
+          attributes: ['id', 'userId'],
           include: [
             {
               model: User,
@@ -226,9 +228,18 @@ exports.deleteCard = async (req, res) => {
 
 exports.getCardOptions = async (req, res) => {
   try {
-    const [vehicles, fares] = await Promise.all([
+    const [vehicles, drivers, fares] = await Promise.all([
       Vehicle.findAll({
         attributes: ['id', 'licensePlate'],
+      }),
+      Driver.findAll({
+        attributes: ['id'],
+        include: [
+          {
+            model: User,
+            attributes: ['id', 'documentNumber', 'firstName', 'lastName']
+          }
+        ]
       }),
       Fare.findAll({
         attributes: ['id', 'minimum']
@@ -240,6 +251,7 @@ exports.getCardOptions = async (req, res) => {
       message: "Opciones obtenidas exitosamente",
       data: {
         vehicles,
+        drivers,
         fares
       }
     });
@@ -314,15 +326,15 @@ exports.generateCard = async (req, res) => {
     if (!driver) {
       return res.status(404).json({
         success: false,
-        message: "Persona no encontrada"
+        message: "Conductor no encontrado"
       });
     }
     
     const user = await User.findByPk(driver.userId, {
       include: [
         {
-          model: Person,
-          attributes: ['id', 'documentNumber', 'firstName', 'lastName', 'bloodTypeId', 
+          model: Driver,
+          attributes: ['id', 'bloodTypeId', 
             'address', 'phoneNumber', 'healthInsurance', 'workInsurance', 'pension', 
             'licenseNumber', 'documentTypeId']
         }
@@ -434,8 +446,8 @@ exports.generateCard = async (req, res) => {
       }
     };
 
-    res.status(200).json({
-      ok: true,
+    return res.status(200).json({
+      success: true,
       message: "Datos de la tarjeta generados exitosamente",
       data: {
         cardData
@@ -444,8 +456,8 @@ exports.generateCard = async (req, res) => {
 
   } catch (error) {
     console.log(error);
-    res.status(500).json({
-      ok: false,
+    return res.status(500).json({
+      success: false,
       message: "Error al generar los datos de la tarjeta",
       error: error.message
     });
