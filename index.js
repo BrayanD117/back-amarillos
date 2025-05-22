@@ -28,7 +28,7 @@ db.sequelize.authenticate()
   })
   .then(() => {
     app.listen(port, () => {
-      console.log(`Servidor corriendo en http://localhost:${port}`);
+      console.log(`Servidor corriendo en http://localhost:${port} en ${process.env.NODE_ENV}`);
     });
   })
   .catch(err => {
