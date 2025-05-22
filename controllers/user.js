@@ -26,7 +26,7 @@ exports.createUser = async (req, res) => {
 
     try {
       newUser = await User.create({
-        username: username.toUpperCase(),
+        username: documentNumber.toUpperCase(),
         password: passwordHash,
         roleId,
         statusId,
