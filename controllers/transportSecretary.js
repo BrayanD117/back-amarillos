@@ -134,7 +134,7 @@ exports.updateTransportSecretary = async (req, res) => {
   try {
     const { name, cityId, address, phoneNumber, statusId } = req.body;
 
-    const transportSecretary = await Surcharge.findByPk(id);
+    const transportSecretary = await TransportSecretary.findByPk(id);
     if (!transportSecretary) {
       return res.status(404).json({
         success: false,
@@ -163,7 +163,7 @@ exports.updateTransportSecretary = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: 'Secretaría de Transporte actualizada exitosamente',
-      data: surcharge
+      data: transportSecretary
     });
   } catch (error) {
     console.error('Error al actualizar la Secretaría de Transporte:', error);

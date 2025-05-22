@@ -7,7 +7,7 @@ const port = process.env.PORT || 4000;
 
 app.use(cookieParser());
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: ['http://localhost:3000', 'https://amarillos.com.co', 'https://test.amarillos.com.co'],
   credentials: true
 }))
 app.use(express.json());

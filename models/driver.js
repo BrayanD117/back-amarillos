@@ -15,6 +15,7 @@ module.exports = (sequelize, DataTypes) => {
       Driver.belongsTo(models.LicenseCategory, { foreignKey: 'licenseCategoryId' });
 
       Driver.hasMany(models.Control, { foreignKey: 'driverId' });
+      Driver.hasMany(models.Card, { foreignKey: 'driverId' });
     }
   }
   Driver.init({

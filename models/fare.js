@@ -37,7 +37,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     },
     hour: {
-      type: DataTypes.TIME,
+      type: DataTypes.DECIMAL,
       allowNull: false
     }
   }, {

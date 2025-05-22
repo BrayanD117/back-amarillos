@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       User.belongsTo(models.Status, { foreignKey: 'statusId' });
       User.belongsTo(models.Role, { foreignKey: 'roleId' });
       User.belongsTo(models.DocumentType, { foreignKey: 'documentTypeId' });
-      User.hasOne(models.Driver, { foreignKey: 'driverId' });
+      User.hasOne(models.Driver, { foreignKey: 'userId' });
       User.belongsTo(models.Company, { foreignKey: 'companyId' });
       User.belongsTo(models.TransportSecretary, { foreignKey: 'transportSecretaryId' });
     }

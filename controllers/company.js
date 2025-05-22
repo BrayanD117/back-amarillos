@@ -1,4 +1,4 @@
-const { Company, TransportSecretary, Person } = require('../models');
+const { Company, TransportSecretary, Person, DocumentType } = require('../models');
 const { Op } = require('sequelize');
 
 exports.getCompanies = async (req, res) => {
@@ -127,15 +127,15 @@ exports.createCompany = async (req, res) => {
 
     const company = await Company.create({
       transportSecretaryId,
-      companyType,
-      name,
-      nit,
-      legalRepresentativeName,
+      companyType: companyType.toUpperCase(),
+      name: name.toUpperCase(),
+      nit: nit.toUpperCase(),
+      legalRepresentativeName: legalRepresentativeName.toUpperCase(),
       legalRepresentativeDocumentTypeId,
-      legalRepresentativeDocument,
-      address,
-      phoneNumber,
-      email
+      legalRepresentativeDocument: legalRepresentativeDocument.toUpperCase(),
+      address: address.toUpperCase(),
+      phoneNumber: phoneNumber.toUpperCase(),
+      email: email.toUpperCase()
     });
 
     return res.status(201).json({
@@ -199,15 +199,15 @@ exports.updateCompany = async (req, res) => {
 
     await company.update({
       transportSecretaryId: transportSecretaryId || company.transportSecretaryId,
-      companyType: companyType || company.companyType,
-      name: name || company.name,
-      nit: nit || company.nit,
-      legalRepresentativeName: legalRepresentativeName || company.legalRepresentativeName,
+      companyType: companyType ? companyType.toUpperCase() : company.companyType,
+      name: name ? name.toUpperCase() : company.name,
+      nit: nit ? nit.toUpperCase() : company.nit,
+      legalRepresentativeName: legalRepresentativeName ? legalRepresentativeName.toUpperCase() : company.legalRepresentativeName,
       legalRepresentativeDocumentTypeId: legalRepresentativeDocumentTypeId || company.legalRepresentativeDocumentTypeId,
-      legalRepresentativeDocument: legalRepresentativeDocument || company.legalRepresentativeDocument,
-      address: address || company.address,
-      phoneNumber: phoneNumber || company.phoneNumber,
-      email: email || company.email
+      legalRepresentativeDocument: legalRepresentativeDocument ? legalRepresentativeDocument.toUpperCase() : company.legalRepresentativeDocument,
+      address: address ? address.toUpperCase() : company.address,
+      phoneNumber: phoneNumber ? phoneNumber.toUpperCase() : company.phoneNumber,
+      email: email ? email.toUpperCase() : company.email
     });
 
     return res.status(200).json({
@@ -258,9 +258,17 @@ exports.getOptions = async (req, res) => {
       order: [['name', 'ASC']]
     });
 
+    const documentTypes = await DocumentType.findAll({
+      attributes: ['id', 'name'],
+      order: [['name', 'ASC']]
+    });
+
     return res.status(200).json({
       success: true,
-      data: transportSecretaries
+      data: {
+        TransportSecretaries: transportSecretaries,
+        DocumentTypes: documentTypes
+      }
     });
   } catch (error) {
     console.error('Error getting options:', error);

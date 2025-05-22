@@ -7,7 +7,7 @@ router.get('/options', verifyToken, controlController.getOptions);
 
 router.get('/vehicle/:vehicleId', verifyToken, controlController.getControlsByVehicle);
 
-router.get('/person/:personId', verifyToken, controlController.getControlsByPerson);
+router.get('/person/:personId', verifyToken, controlController.getControlsByDriver);
 
 router.get('/', verifyToken, controlController.getControls);
 
