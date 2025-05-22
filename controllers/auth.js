@@ -26,7 +26,7 @@ exports.login = async (req, res) => {
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'Strict',
             maxAge: 60 * 60 * 1000,
-            domain: process.env.NODE_ENV === 'production' ? 'amarillos.com.co' : 'test.amarillos.com.co'
+            domain: process.env.NODE_ENV === 'production' ? 'amarillos.com.co' : undefined
         })
 
         return res.json({
