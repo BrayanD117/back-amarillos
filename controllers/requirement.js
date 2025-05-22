@@ -13,7 +13,6 @@ exports.getRequirements = async (req, res) => {
           model: Vehicle,
           attributes: ['id', 'licensePlate'],
           include: [
-            { model: Person, attributes: ['id', 'firstName', 'lastName'] },
             { model: Status, attributes: ['name'] },
             { model: Service, attributes: ['name'] },            
             { model: Fuel, attributes: ['name'] },
